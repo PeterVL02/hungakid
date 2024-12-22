@@ -3,9 +3,9 @@ from dataclasses import dataclass, field
 import numpy as np
 import os
 
-from src.commands.stat_utils import accuracy_confidence_interval, mse_confidence_interval
+from src.MLOps.utils.stat_utils import accuracy_confidence_interval, mse_confidence_interval
 from src.commands.command_utils import MlModel, ProjectType
-from src.commands.ml_utils import onehot_encode_string_columns
+from src.MLOps.utils.ml_utils import onehot_encode_string_columns
 
 
 @dataclass

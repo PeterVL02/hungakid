@@ -1,4 +1,4 @@
-from src.commands.regression.regression import linreg
+from src.MLOps.regression.regression import linreg
 from src.commands.proj_cmds import (create, set_current_project, 
                                     list_projects, delete, pcp, 
                                     add_data, read_data, make_X_y, 

@@ -4,7 +4,7 @@ from sklearn.linear_model import LogisticRegression
 import numpy as np
 from typing import Any
 
-from src.commands.classification.clas_utils import generic_classification
+from src.MLOps.classification.clas_utils import generic_classification
 
 
 def naivebayes(X: np.ndarray, y: np.ndarray, *args, **kwargs

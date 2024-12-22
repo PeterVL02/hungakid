@@ -1,5 +1,5 @@
-from src.commands.regression.regression import linreg as linreg_impl, mlpreg as mlpreg_impl
-from src.commands.classification.classification import (naivebayes as naivebayes_impl, mlpclas as mlpclas_impl, 
+from src.MLOps.regression.regression import linreg as linreg_impl, mlpreg as mlpreg_impl
+from src.MLOps.classification.classification import (naivebayes as naivebayes_impl, mlpclas as mlpclas_impl, 
                                                         logisticreg as logisticreg_impl
                                                         )
 from src.commands.command_utils import MlModel
@@ -77,7 +77,7 @@ def mlpclas(model: Model, *args, **kwargs) -> str:
     y: np.ndarray = model.projects[model.current_project].y
 
     predictions, intercept, weights = mlpclas_impl(X, y, *args, **kwargs)
-    return model.log_model(MlModel.MLPCLASS, predictions = predictions, params = {}, intercept = intercept, weights = weights)
+    return model.log_model(MlModel.MLPCLASS, predictions = predictions, params = {})
 
 def logisticreg(model: Model, *args, **kwargs) -> str:
     """

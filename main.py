@@ -8,7 +8,10 @@ It initializes the ProjectStore and Shell, then starts the shell. Example usage:
 from src.shell import Shell
 from src.project_store import ProjectStore
 
-if __name__ == "__main__":
+def main() -> None:
     project_store = ProjectStore()
     shell = Shell(project_store)
     shell.run()
+
+if __name__ == "__main__":
+    main()

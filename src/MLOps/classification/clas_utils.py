@@ -1,13 +1,14 @@
 import numpy as np
-from sklearn.linear_model import LinearRegression
-from sklearn.neural_network import MLPRegressor
+from sklearn.naive_bayes import GaussianNB
+from sklearn.neural_network import MLPClassifier
+from sklearn.linear_model import LogisticRegression
 from typing import Any
 from tqdm import tqdm
 
 from src.MLOps.utils.ml_utils import k_fold_cross, standard_pipeline
 
 
-def generic_regression(regressor: LinearRegression | MLPRegressor,  X: np.ndarray, y: np.ndarray, *args, **kwargs
+def generic_classification(classifier: GaussianNB | MLPClassifier | LogisticRegression,  X: np.ndarray, y: np.ndarray, *args, **kwargs
                        ) -> tuple[np.ndarray, list[float], Any]:
     """
     Perform linear regression with k-fold cross-validation.
@@ -35,13 +36,13 @@ def generic_regression(regressor: LinearRegression | MLPRegressor,  X: np.ndarra
         X_train, X_test = X[train_index], X[test_index]
         y_train, y_test = y[train_index], y[test_index]
         X_train, X_test = standard_pipeline(X_train, X_test)
-        model = regressor
+        model = classifier
         model.__init__(**kwargs)
         model.fit(X_train, y_train)
         predictions.extend(model.predict(X_test))
         scores.append(float(model.score(X_test, y_test)))
     
-    final_model = regressor
+    final_model = classifier
     final_model.__init__(**kwargs)
     X, _ = standard_pipeline(X, X)
     final_model.fit(X, y)

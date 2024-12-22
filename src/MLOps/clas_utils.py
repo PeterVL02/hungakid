@@ -5,7 +5,7 @@ from sklearn.linear_model import LogisticRegression
 from typing import Any
 from tqdm import tqdm
 
-from src.commands.ml_utils import k_fold_cross, standard_pipeline
+from src.MLOps.utils.ml_utils import k_fold_cross, standard_pipeline
 
 
 def generic_classification(classifier: GaussianNB | MLPClassifier | LogisticRegression,  X: np.ndarray, y: np.ndarray, *args, **kwargs
