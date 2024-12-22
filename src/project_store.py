@@ -1,5 +1,5 @@
-from src.commands.model import Model
-from src.main_project import ShellProject, ProjectType
+from src.commands.project_store_protocol import Model
+from src.shell_project import ShellProject, ProjectType
 from src.commands.command_utils import MlModel, ProjectType
 
 from pandas import DataFrame

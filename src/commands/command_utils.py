@@ -24,44 +24,37 @@ class ProjectType(StrEnum):
     REGRESSION = "regression"
 
 def convert_to_type(type_str: str) -> ProjectType:
+    """
+    Convert a string to a ProjectType enum.
+
+    Args:
+        type_str (str): The project type as a string.
+
+    Raises:
+        ValueError: If the provided string does not match any ProjectType.
+
+    Returns:
+        ProjectType: The corresponding ProjectType enum.
+    """
     try:
         return ProjectType[type_str.upper()]
     except ValueError:
         raise ValueError(f"Invalid project type: {type_str}")
     
 def convert_to_ml_type(type_str: str) -> MlModel:
+    """
+    Convert a string to an MlModel enum.
+
+    Args:
+        type_str (str): The ML model type as a string.
+
+    Raises:
+        ValueError: If the provided string does not match any MlModel.
+
+    Returns:
+        MlModel: The corresponding MlModel enum.
+    """
     try:
         return MlModel[type_str.upper()]
     except ValueError:
         raise ValueError(f"Invalid ML model: {type_str}")
-    
-def print_unused(*args, **kwargs) -> str:
-    return "Unused args: " + str(args) + str(kwargs)
-
-def regression_pipeline(X_train: np.ndarray, X_test: np.ndarray) -> tuple[np.ndarray, np.ndarray]:
-    mu, sig = X_train.mean(axis=0), X_train.std(axis=0)
-    X_train = (X_train - mu) / sig
-    X_test =   (X_test - mu) / sig
-    return X_train, X_test
-
-
-def onehot_encode_string_columns(df: DataFrame) -> DataFrame:
-    """
-    Detects columns containing strings in `df` and one-hot encodes them.
-    Returns a new DataFrame with the transformations applied.
-    """
-    df_encoded = df.copy()
-
-    string_cols = []
-    for col in df_encoded.columns:
-        if is_string_dtype(df_encoded[col]):
-            non_null_values = df_encoded[col].dropna()
-            if all(isinstance(val, str) for val in non_null_values):
-                string_cols.append(col)
-    
-    for col in string_cols:
-        dummies = get_dummies(df_encoded[col], prefix=col)
-        df_encoded.drop(col, axis=1, inplace=True)
-        df_encoded = concat([df_encoded, dummies], axis=1)
-    
-    return df_encoded

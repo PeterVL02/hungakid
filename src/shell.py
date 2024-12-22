@@ -1,5 +1,5 @@
 from src.commands.command import Command
-from src.commands.model import Model
+from src.commands.project_store_protocol import Model
 from colorama import Fore, Back, Style
 
 

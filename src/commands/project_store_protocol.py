@@ -3,7 +3,7 @@ from pandas import DataFrame
 import numpy as np
 
 from src.commands.command_utils import ProjectType
-from src.main_project import ShellProject
+from src.shell_project import ShellProject
 from src.commands.command_utils import MlModel
 
 

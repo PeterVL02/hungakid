@@ -1,6 +1,6 @@
 from src.commands.regression import linreg as linreg_impl, mlpreg as mlpreg_impl
 from src.commands.command_utils import MlModel
-from src.commands.model import Model
+from src.commands.project_store_protocol import Model
 
 import numpy as np
 

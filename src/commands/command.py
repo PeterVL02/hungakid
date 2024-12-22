@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 
-from src.commands.factory import cmd_exists, execute_cmd
-from src.commands.model import Model
+from src.commands.command_factory import cmd_exists, execute_cmd
+from src.commands.project_store_protocol import Model
 
 
 @dataclass
@@ -17,7 +17,6 @@ class Command:
         if not cmd_exists(cmd = cmd):
             raise ValueError(f"Command {cmd} does not exist.")
 
-        # Process each argument, converting to appropriate type
         parsed_args: list[str | int | list[str]] = []
         parsed_kwargs: dict[str, str | int | list[str]] = {}
         for arg in raw_args:

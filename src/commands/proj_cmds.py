@@ -1,7 +1,6 @@
-from src.commands.model import Model
-from src.main_project import ShellProject
+from src.commands.project_store_protocol import Model
+from src.shell_project import ShellProject
 from src.commands.command_utils import convert_to_type, convert_to_ml_type
-from src.commands.command_utils import MlModel
 
 from pandas import DataFrame
 import numpy as np

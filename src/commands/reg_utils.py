@@ -4,8 +4,7 @@ from sklearn.neural_network import MLPRegressor
 from typing import Any
 from tqdm import tqdm
 
-from src.commands.kfold import k_fold_cross
-from src.commands.command_utils import regression_pipeline
+from src.commands.ml_utils import k_fold_cross, regression_pipeline
 
 
 def generic_regression(regressor: LinearRegression | MLPRegressor,  X: np.ndarray, y: np.ndarray, *args, **kwargs
