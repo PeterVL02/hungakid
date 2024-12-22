@@ -3,7 +3,7 @@ import numpy as np
 from pandas import DataFrame, get_dummies, concat
 from pandas.api.types import is_string_dtype
 
-def k_fold_cross(X: np.ndarray, y: np.ndarray, shuffle: bool, n_splits: int, random_state: int | None) -> tuple[np.ndarray, np.ndarray]:
+def k_fold_cross(X: np.ndarray, y: np.ndarray, shuffle: bool, n_splits: int, random_state: int | None) -> list[tuple[np.ndarray, np.ndarray]]:
     """
     Perform K-Fold cross-validation.
 
@@ -18,7 +18,7 @@ def k_fold_cross(X: np.ndarray, y: np.ndarray, shuffle: bool, n_splits: int, ran
         tuple[np.ndarray, np.ndarray]: Indices for training and validation splits.
     """
     kf = KFold(n_splits=n_splits, random_state=random_state, shuffle=shuffle)
-    return tuple(kf.split(X, y))
+    return list(kf.split(X, y))
 
 def standard_pipeline(X_train: np.ndarray, X_test: np.ndarray) -> tuple[np.ndarray, np.ndarray]:
     """Standardize the data using the mean and standard deviation of the training set.
