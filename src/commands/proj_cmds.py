@@ -57,7 +57,7 @@ def set_current_project(model: Model, alias: str, *args, **kwargs) -> str:
     """
     return model.set_current_project(alias)
 
-def pcp(model: Model) -> ShellProject | str:
+def pcp(model: Model) -> str:
     """
     Retrieves the current project.
 
@@ -65,7 +65,7 @@ def pcp(model: Model) -> ShellProject | str:
         model (Model): Parsed automatically by the command parser.
 
     Returns:
-        ShellProject | str: The current project or an error message if no project is set.
+        str: The current project or an error message if no project is set.
     """
     return model.pcp()
 

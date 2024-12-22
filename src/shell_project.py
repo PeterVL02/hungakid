@@ -1,4 +1,3 @@
-from typing import Optional
 from pandas import DataFrame, read_csv
 from dataclasses import dataclass, field
 import numpy as np
@@ -36,9 +35,9 @@ class ShellProject:
         if not self.is_cleaned:
             print("Warning: Data not cleaned. Run clean to clean data and rerun make_X_y to be safe...")
         if self.df is None:
-            raise ValueError("Project has no dataframe")
+            raise ValueError("Project has no dataframe. Use add_data to add a dataframe.")
         if target not in self.df.columns:
-            raise ValueError(f"Target column {target} not in dataframe")
+            raise ValueError(f"Target column {target} not in dataframe.")
         for col in self.df.columns:
             if col.lower() == 'id':
                 self.df.drop(col, axis=1, inplace=True)

@@ -1,6 +1,6 @@
 from src.commands.command import Command
 from src.commands.project_store_protocol import Model
-from colorama import Fore, Back, Style
+from colorama import Fore, Style
 
 
 class Shell:
@@ -17,13 +17,12 @@ class Shell:
                         return
                     command = Command.from_string(subcommand)
                     command.execute(self.model)
-            except (TypeError, ValueError, IndexError) as e:
-                self.display_message("Incorrect args provided for command")
+            except (TypeError, ValueError) as e:
+                self.display_message("Error:")
                 self.display_log(e.with_traceback(None))
 
     def display_message(self, message: str) -> None:
-        print(Fore.RED + message)
-        print(Style.RESET_ALL)
+        print(Fore.RED + message + Style.RESET_ALL)
 
     def display_log(self, exception: Exception) -> None:
-        print(exception)
+        print(Fore.RED + str(exception) + Style.RESET_ALL)

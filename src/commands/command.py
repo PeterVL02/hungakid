@@ -13,7 +13,10 @@ class Command:
     @staticmethod
     def from_string(command: str) -> "Command":
         parts = command.split()
-        cmd, raw_args = parts[0], parts[1:]
+        try:
+            cmd, raw_args = parts[0], parts[1:]
+        except IndexError:
+            raise ValueError("Command must be first argument. Empty commands are not allowed.")
         if not cmd_exists(cmd = cmd):
             raise ValueError(f"Command {cmd} does not exist.")
 

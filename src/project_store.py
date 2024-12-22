@@ -38,11 +38,11 @@ class ProjectStore(Model):
         self.current_project = alias
         return f"Current project set to {alias}"
 
-    def pcp(self) -> ShellProject | str:
+    def pcp(self) -> str:
         if not self.current_project:
             return "No current project set"
         
-        return self.projects[self.current_project]
+        return self.projects[self.current_project].__str__()
     
     def add_data(self, df_name: str) -> str:
         if not self.current_project:
