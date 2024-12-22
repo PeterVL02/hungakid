@@ -41,9 +41,10 @@ class ShellProject:
         for col in self.df.columns:
             if col.lower() == 'id':
                 self.df.drop(col, axis=1, inplace=True)
-        self.df = onehot_encode_string_columns(self.df)
 
+        self.df = onehot_encode_string_columns(self.df, ignore_columns=[target])
         self.y = np.array(self.df[target].values)
+
         self.X = self.df.drop(target, axis=1).values.astype(float)
         
         return "X and y created successfully."

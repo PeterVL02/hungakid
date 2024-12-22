@@ -3,7 +3,7 @@ from sklearn.neural_network import MLPRegressor
 import numpy as np
 from typing import Any
 
-from src.commands.reg_utils import generic_regression
+from src.commands.regression.reg_utils import generic_regression
 
 
 def linreg(X: np.ndarray, y: np.ndarray, *args, **kwargs

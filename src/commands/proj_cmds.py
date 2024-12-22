@@ -1,5 +1,4 @@
 from src.commands.project_store_protocol import Model
-from src.shell_project import ShellProject
 from src.commands.command_utils import convert_to_type, convert_to_ml_type
 
 from pandas import DataFrame

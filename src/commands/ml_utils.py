@@ -20,7 +20,7 @@ def k_fold_cross(X: np.ndarray, y: np.ndarray, shuffle: bool, n_splits: int, ran
     kf = KFold(n_splits=n_splits, random_state=random_state, shuffle=shuffle)
     return tuple(kf.split(X, y))
 
-def regression_pipeline(X_train: np.ndarray, X_test: np.ndarray) -> tuple[np.ndarray, np.ndarray]:
+def standard_pipeline(X_train: np.ndarray, X_test: np.ndarray) -> tuple[np.ndarray, np.ndarray]:
     """Standardize the data using the mean and standard deviation of the training set.
 
     Args:
@@ -35,7 +35,7 @@ def regression_pipeline(X_train: np.ndarray, X_test: np.ndarray) -> tuple[np.nda
     X_test =   (X_test - mu) / sig
     return X_train, X_test
 
-def onehot_encode_string_columns(df: DataFrame) -> DataFrame:
+def onehot_encode_string_columns(df: DataFrame, ignore_columns: list[str]) -> DataFrame:
     """
     Detects columns containing strings in `df` and one-hot encodes them.
     Returns a new DataFrame with the transformations applied.
@@ -44,6 +44,8 @@ def onehot_encode_string_columns(df: DataFrame) -> DataFrame:
 
     string_cols = []
     for col in df_encoded.columns:
+        if col in ignore_columns:
+            continue
         if is_string_dtype(df_encoded[col]):
             non_null_values = df_encoded[col].dropna()
             if all(isinstance(val, str) for val in non_null_values):

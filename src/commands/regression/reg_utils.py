@@ -4,7 +4,7 @@ from sklearn.neural_network import MLPRegressor
 from typing import Any
 from tqdm import tqdm
 
-from src.commands.ml_utils import k_fold_cross, regression_pipeline
+from src.commands.ml_utils import k_fold_cross, standard_pipeline
 
 
 def generic_regression(regressor: LinearRegression | MLPRegressor,  X: np.ndarray, y: np.ndarray, *args, **kwargs
@@ -34,7 +34,7 @@ def generic_regression(regressor: LinearRegression | MLPRegressor,  X: np.ndarra
                                                      shuffle=shuffle), desc='Cross Validating'):
         X_train, X_test = X[train_index], X[test_index]
         y_train, y_test = y[train_index], y[test_index]
-        X_train, X_test = regression_pipeline(X_train, X_test)
+        X_train, X_test = standard_pipeline(X_train, X_test)
         model = regressor
         model.__init__(**kwargs)
         model.fit(X_train, y_train)
@@ -43,7 +43,7 @@ def generic_regression(regressor: LinearRegression | MLPRegressor,  X: np.ndarra
     
     final_model = regressor
     final_model.__init__(**kwargs)
-    X, _ = regression_pipeline(X, X)
+    X, _ = standard_pipeline(X, X)
     final_model.fit(X, y)
     print('Generic Model Scores', np.mean(scores))
 

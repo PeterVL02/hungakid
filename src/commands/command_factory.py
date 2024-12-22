@@ -1,10 +1,10 @@
-from src.commands.regression import linreg
+from src.commands.regression.regression import linreg
 from src.commands.proj_cmds import (create, set_current_project, 
                                     list_projects, delete, pcp, 
                                     add_data, read_data, make_X_y, 
                                     clean_data, log_model, summary
                                     )
-from src.commands.ml_cmds import linreg, mlpreg
+from src.commands.ml_cmds import linreg, mlpreg, naivebayes, mlpclas, logisticreg
 
 from typing import Any, Callable
 from pandas import DataFrame
@@ -24,6 +24,9 @@ def list_cmds(*args, **kwargs) -> str:
 COMMANDS: dict[str, CommandFn] = {
     "linreg": linreg,
     "mlpreg": mlpreg,
+    "naivebayes": naivebayes,
+    "mlpclas": mlpclas,
+    "logisticreg": logisticreg,
     "create": create,
     "set_current_project": set_current_project,
     "list_projects": list_projects,
