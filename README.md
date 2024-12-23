@@ -93,7 +93,7 @@ python main.py
    >> exit
    ```
 
-## Directory Structure
+## Directory Structure (DEPRECATED)
 ```
 project-folder/
 ├── src/
