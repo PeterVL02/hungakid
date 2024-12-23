@@ -88,7 +88,7 @@ class ShellProject:
                 summary_str += f"  {key}: {value}\n"
                 summary_str += "\n"
         
-        return summary_str
+        return summary_str[:-2]
 
     def __str__(self) -> str:
         return f"Project: {self.project_name}, Type: {self.project_type}"

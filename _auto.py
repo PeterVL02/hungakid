@@ -23,7 +23,7 @@ def main() -> None:
         "linreg",
         "mlpreg max_iter=1000",
         "summary",
-        "exit"
+        "exit",
     ]
     clas_commands = [
         "create my_project classification",
@@ -34,7 +34,7 @@ def main() -> None:
         "mlpclas max_iter=1000",
         "logisticreg",
         "summary",
-        "exit"
+        "exit",
     ]
     
     simulate_cli(reg_commands)

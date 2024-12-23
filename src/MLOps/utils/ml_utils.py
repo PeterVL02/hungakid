@@ -57,3 +57,4 @@ def onehot_encode_string_columns(df: DataFrame, ignore_columns: list[str]) -> Da
         df_encoded = concat([df_encoded, dummies], axis=1)
     
     return df_encoded
+

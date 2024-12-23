@@ -1,0 +1,13 @@
+from typing import Protocol, Any
+import numpy as np
+
+
+class BaseEstimator(Protocol):
+    def fit(self, X, y) -> Any:
+        ...
+    def predict(self, X) -> np.ndarray | Any:
+        ...
+    def score(self, X, y) -> float | Any:
+        ...
+    def __init__(self, *args, **kwargs) -> None:
+        ...

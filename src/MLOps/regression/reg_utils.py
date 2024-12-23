@@ -1,13 +1,11 @@
 import numpy as np
-from sklearn.linear_model import LinearRegression
-from sklearn.neural_network import MLPRegressor
 from typing import Any
 from tqdm import tqdm
 
 from src.MLOps.utils.ml_utils import k_fold_cross, standard_pipeline
+from src.MLOps.utils.base import BaseEstimator
 
-
-def generic_regression(regressor: LinearRegression | MLPRegressor,  X: np.ndarray, y: np.ndarray, *args, **kwargs
+def generic_regression(regressor: BaseEstimator,  X: np.ndarray, y: np.ndarray, *args, **kwargs
                        ) -> tuple[np.ndarray, list[float], Any]:
     """
     Perform linear regression with k-fold cross-validation.

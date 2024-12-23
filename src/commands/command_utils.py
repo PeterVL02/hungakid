@@ -5,6 +5,7 @@ class MlModel(StrEnum):
     NAIVE_BAYES = "naive_bayes"
     LINEAR_REGRESSION = "linear_regression"
     LOGISTIC_REGRESSION = "logistic_regression"
+    GRADIENT_BOOSTING_CLASSIFIER = "gradient_boosting_classifier"
     K_MEANS = "k_means"
     KNN = "knn"
     DECISION_TREE = "decision_tree"

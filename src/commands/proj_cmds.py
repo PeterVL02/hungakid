@@ -31,7 +31,7 @@ def delete(model: Model, alias: str, *args, **kwargs) -> str:
     """
     return model.delete(alias)
 
-def list_projects(model: Model, *args, **kwargs) -> list[str]:
+def list_projects(model: Model, *args, **kwargs) -> str:
     """
     Lists all projects in the model.
 

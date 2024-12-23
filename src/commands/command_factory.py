@@ -4,7 +4,9 @@ from src.commands.proj_cmds import (create, set_current_project,
                                     add_data, read_data, make_X_y, 
                                     clean_data, log_model, summary
                                     )
-from src.commands.ml_cmds import linreg, mlpreg, naivebayes, mlpclas, logisticreg
+from src.commands.ml_cmds import (linreg, mlpreg, naivebayes, mlpclas, 
+                                  logisticreg, decisiontree, randomforest, 
+                                  gradientboosting)
 
 from typing import Any, Callable
 from pandas import DataFrame
@@ -27,9 +29,12 @@ COMMANDS: dict[str, CommandFn] = {
     "naivebayes": naivebayes,
     "mlpclas": mlpclas,
     "logisticreg": logisticreg,
+    "decisiontree": decisiontree,
+    "randomforest": randomforest,
+    "gradientboosting": gradientboosting,
     "create": create,
-    "set_current_project": set_current_project,
-    "list_projects": list_projects,
+    "chproj": set_current_project,
+    "listproj": list_projects,
     "delete": delete,
     "pcp" : pcp,
     "help" : list_cmds,
@@ -37,7 +42,6 @@ COMMANDS: dict[str, CommandFn] = {
     "read_data": read_data,
     "make_X_y": make_X_y,
     "clean_data": clean_data,
-    "log_model": log_model,
     "summary": summary
 }
 

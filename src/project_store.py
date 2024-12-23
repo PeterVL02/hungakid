@@ -28,8 +28,8 @@ class ProjectStore(Model):
             self.current_project = None
         return f"Project {alias} deleted successfully. Current project is {self.current_project}."
 
-    def list_projects(self) -> list[str]:
-        return list(self.projects.keys())
+    def list_projects(self) -> str:
+        return str(list(self.projects.keys()))
     
     def set_current_project(self, alias: str) -> str:
         if alias not in self.projects:
