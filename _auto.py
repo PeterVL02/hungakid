@@ -17,8 +17,9 @@ def simulate_cli(commands: list[str]) -> None:
 
 def main() -> None:
     reg_commands = [
-        "create my_project regression",
+        "create reg_project regression",
         "add_data Iris",
+        "read_data",
         "make_X_y SepalLengthCm",
         "linreg",
         "mlpreg max_iter=1000",
@@ -26,7 +27,7 @@ def main() -> None:
         "exit",
     ]
     clas_commands = [
-        "create my_project classification",
+        "create clas_project classification",
         "add_data Iris",
         "read_data",
         "make_X_y Species",
@@ -36,9 +37,26 @@ def main() -> None:
         "summary",
         "exit",
     ]
+    full_commands = reg_commands[:-2] + [
+        "create clas_project classification",
+        "add_data Iris",
+        "clean_data",
+        "make_X_y Species",
+        "read_data",
+        "naivebayes",
+        "mlpclas max_iter=1000",
+        "logisticreg",
+        "summary",
+        "chproj reg_project",
+        "summary",
+        "pcp",
+        "listproj",
+        "exit",
+    ]
     
-    simulate_cli(reg_commands)
-    simulate_cli(clas_commands)
+    # simulate_cli(reg_commands)
+    # simulate_cli(clas_commands)
+    simulate_cli(full_commands)
 
 if __name__ == "__main__":
     main()

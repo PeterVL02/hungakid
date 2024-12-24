@@ -86,7 +86,7 @@ class ShellProject:
             summary_str += f"Model: {model_name}\n"
             for key, value in data.items():
                 summary_str += f"  {key}: {value}\n"
-                summary_str += "\n"
+            summary_str += "\n"
         
         return summary_str[:-2]
 

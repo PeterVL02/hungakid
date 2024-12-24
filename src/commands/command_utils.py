@@ -6,16 +6,11 @@ class MlModel(StrEnum):
     LINEAR_REGRESSION = "linear_regression"
     LOGISTIC_REGRESSION = "logistic_regression"
     GRADIENT_BOOSTING_CLASSIFIER = "gradient_boosting_classifier"
-    K_MEANS = "k_means"
-    KNN = "knn"
     DECISION_TREE = "decision_tree"
     RANDOM_FOREST = "random_forest"
     SVM = "svm"
     MLPREG = "mlpreg"
     MLPCLASS = "mlpclass"
-    XGBOOST = "xgboost"
-    LIGHTGBM = "lightgbm"
-    CATBOOST = "catboost"
 
 class ProjectType(StrEnum):
     CLASSIFICATION = "classification"
