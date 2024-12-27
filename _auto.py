@@ -22,7 +22,7 @@ def main() -> None:
         "read_data",
         "make_X_y SepalLengthCm",
         "linreg",
-        "mlpreg max_iter=1000",
+        "mlpreg --max_iter 1000",
         "summary",
         "exit",
     ]
@@ -38,13 +38,15 @@ def main() -> None:
         "exit",
     ]
     full_commands = reg_commands[:-2] + [
+        "",
+        "",
         "create clas_project classification",
         "add_data Iris",
         "clean_data",
         "make_X_y Species",
         "read_data",
         "naivebayes",
-        "mlpclas max_iter=1000",
+        "mlpclas -max_iter 1000",
         "logisticreg",
         "summary",
         "chproj reg_project",
