@@ -119,7 +119,7 @@ def clean_data(model: Model, *args, **kwargs) -> str:
     """
     return model.clean_data()
 
-def log_model(model: Model, model_name: str, predictions: np.ndarray, params: dict[str, float], *args, **kwargs) -> str:
+def log_model(model: Model, model_name: str, predictions: np.ndarray, params: dict[str, float | int | str], *args, **kwargs) -> str:
     """
     Logs a model in the current project.
 

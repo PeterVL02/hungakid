@@ -4,6 +4,7 @@ from src.MLOps.classification.classification import (naivebayes as naivebayes_im
                                                     decisiontree_impl, randomforest as randomforest_impl, 
                                                     gradientboosting as gradientboosting_impl
                                                         )
+from src.MLOps.tuning import log_predictions_from_best
 from src.commands.command_utils import MlModel
 from src.commands.project_store_protocol import Model
 
@@ -142,3 +143,21 @@ def gradientboosting(model: Model, *args, **kwargs) -> str:
 
     predictions, model_importances, final_model = gradientboosting_impl(X, y, *args, **kwargs)
     return model.log_model(MlModel.GRADIENT_BOOSTING_CLASSIFIER, predictions = predictions, params = {}, importances = model_importances, final_model = final_model)
+
+def log_from_best(model: Model, *args, **kwargs) -> str:
+    from sklearn.linear_model import LinearRegression
+    from sklearn.neural_network import MLPRegressor
+    from sklearn.tree import DecisionTreeRegressor
+    from sklearn.ensemble import RandomForestRegressor
+
+    from sklearn.naive_bayes import GaussianNB
+    from sklearn.neural_network import MLPClassifier
+    from sklearn.linear_model import LogisticRegression
+    from sklearn.tree import DecisionTreeClassifier
+    from sklearn.ensemble import RandomForestClassifier
+    from sklearn.ensemble import GradientBoostingClassifier
+
+    if model.projects[model.current_project].project_type == 'classification':
+        return model.log_predictions_from_best(GaussianNB(), MLPClassifier(), LogisticRegression(), DecisionTreeClassifier(), RandomForestClassifier(), GradientBoostingClassifier(), *args, **kwargs)
+    
+    return model.log_predictions_from_best(LinearRegression(), MLPRegressor(), DecisionTreeRegressor(), RandomForestRegressor(), *args, **kwargs)

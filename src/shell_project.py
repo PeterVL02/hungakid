@@ -6,6 +6,8 @@ import os
 from src.MLOps.utils.stat_utils import accuracy_confidence_interval, mse_confidence_interval
 from src.commands.command_utils import MlModel, ProjectType
 from src.MLOps.utils.ml_utils import onehot_encode_string_columns
+from src.MLOps.utils.base import BaseEstimator
+from src.MLOps.tuning import log_predictions_from_best
 
 
 @dataclass
@@ -18,7 +20,7 @@ class ShellProject:
     X: np.ndarray | None = None
     y: np.ndarray | None = None
     
-    modeldata: dict[str, dict[str, float]] = field(default_factory=dict)
+    modeldata: dict[str, dict[str, float | int | str]] = field(default_factory=dict)
     
     def add_df(self, df_name: str) -> str:
         if not os.path.exists(f'data/{df_name}.csv'):
@@ -56,7 +58,7 @@ class ShellProject:
         self.is_cleaned = True
         return "Data cleaned successfully."
 
-    def log_model(self, model_name: MlModel, predictions: np.ndarray, params: dict[str, float]) -> str:
+    def log_model(self, model_name: MlModel | str, predictions: np.ndarray, params: dict[str, float | int | str]) -> str:
         if self.X is None or self.y is None:
             raise ValueError("X and y not set. Run make_X_y first.")
         if self.project_type == ProjectType.CLASSIFICATION:
@@ -89,6 +91,14 @@ class ShellProject:
             summary_str += "\n"
         
         return summary_str[:-2]
+    
+    def log_predictions_from_best(self, *models: BaseEstimator, cv: int = 10, n_values: int = 3) -> str:
+        if self.X is None or self.y is None:
+            raise ValueError("X and y not set. Run make_X_y first.")
+        if not models:
+            raise ValueError("No models provided.")
+        log_predictions_from_best(*models, project=self, cv=cv, n_values=n_values)
+        return "Predictions logged successfully."
 
     def __str__(self) -> str:
         return f"Project: {self.project_name}, Type: {self.project_type}"

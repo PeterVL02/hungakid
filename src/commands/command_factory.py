@@ -6,7 +6,7 @@ from src.commands.proj_cmds import (create, set_current_project,
                                     )
 from src.commands.ml_cmds import (linreg, mlpreg, naivebayes, mlpclas, 
                                   logisticreg, decisiontree, randomforest, 
-                                  gradientboosting)
+                                  gradientboosting, log_from_best)
 
 from typing import Any, Callable
 from pandas import DataFrame
@@ -42,7 +42,8 @@ COMMANDS: dict[str, CommandFn] = {
     "read_data": read_data,
     "make_X_y": make_X_y,
     "clean_data": clean_data,
-    "summary": summary
+    "summary": summary,
+    "log_best" : log_from_best
 }
 
 

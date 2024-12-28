@@ -5,6 +5,7 @@ import numpy as np
 from src.commands.command_utils import ProjectType
 from src.shell_project import ShellProject
 from src.commands.command_utils import MlModel
+from src.MLOps.utils.base import BaseEstimator
 
 
 
@@ -29,6 +30,8 @@ class Model(Protocol):
 
     def clean_data(self) -> str: ...
 
-    def log_model(self, model_name: "MlModel", predictions: np.ndarray, params: dict[str, float], **kwargs) -> str: ...
+    def log_model(self, model_name: "MlModel", predictions: np.ndarray, params: dict[str, float | int | str], **kwargs) -> str: ...
 
     def summary(self) -> str: ...
+
+    def log_predictions_from_best(self, *models: BaseEstimator, **kwargs) -> str: ...

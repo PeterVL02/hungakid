@@ -53,6 +53,9 @@ def main() -> None:
         "summary",
         "pcp",
         "listproj",
+        "chproj clas_project",
+        "log_best -n_values 2",
+        "summary",
         "exit",
     ]
     

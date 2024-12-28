@@ -1,6 +1,7 @@
 from src.commands.project_store_protocol import Model
 from src.shell_project import ShellProject, ProjectType
-from src.commands.command_utils import MlModel, ProjectType
+from src.commands.command_utils import MlModel
+from src.MLOps.utils.base import BaseEstimator
 
 from pandas import DataFrame
 from dataclasses import dataclass, field
@@ -68,7 +69,7 @@ class ProjectStore(Model):
         
         return self.projects[self.current_project].clean_data()
 
-    def log_model(self, model_name: MlModel, predictions: np.ndarray, params: dict[str, float], **kwargs) -> str:
+    def log_model(self, model_name: MlModel, predictions: np.ndarray, params: dict[str, float | int | str], **kwargs) -> str:
         if kwargs:
             print("kwargs: ", kwargs)
         if not self.current_project:
@@ -81,3 +82,9 @@ class ProjectStore(Model):
             raise ValueError("No current project set")
         
         return self.projects[self.current_project].summary()
+    
+    def log_predictions_from_best(self, *models: BaseEstimator, **kwargs) -> str:
+        if not self.current_project:
+            raise ValueError("No current project set")
+        
+        return self.projects[self.current_project].log_predictions_from_best(*models, **kwargs)
