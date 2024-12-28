@@ -97,7 +97,7 @@ python main.py
    >> exit
    ```
 ### Get a Quick Feeling for it
-Run the following command to start the interactive shell:
+Run the following command to start an automated stream of commands that showcases the features:
 ```bash
 python _auto.py
 ```
