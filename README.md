@@ -87,8 +87,17 @@ python main.py
    ```
    >> summary
    ```
+7. **Tune hyperparameters of multiple models and log their performance and parameters:**
+   ```
+   >> log_best -n_values 3; summary
+   ```
 
-7. **Exit the shell:**
+8. **Exit the shell:**
    ```
    >> exit
    ```
+### Get a Quick Feeling for it
+Run the following command to start an automated stream of commands that showcases the features:
+```bash
+python _auto.py
+```
