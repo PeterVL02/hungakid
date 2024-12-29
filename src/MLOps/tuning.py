@@ -47,6 +47,13 @@ def infer_param_grid(model: BaseEstimator, n_values: int = 3) -> dict[str, list[
                 grid[param] = [default]
             elif param == 'random_state':    
                 grid[param] = [42]
+            elif param == 'max_iter':
+                start = min(default, 500)
+                end = default * 3
+                vals = np.unique(
+                    np.linspace(start, end, n_values, dtype=int)
+                ).tolist()
+                grid[param] = vals
             else:
                 start = max(1, default // 2)
                 end = default * 2
@@ -67,8 +74,14 @@ def infer_param_grid(model: BaseEstimator, n_values: int = 3) -> dict[str, list[
                 ).tolist()
                 grid[param] = vals
 
-        elif isinstance(default, (str, bool)):
-            continue
+        else:
+            if param == 'hidden_layer_sizes':
+                start = 100
+                end = 500
+                vals = np.unique(
+                    np.linspace(start, end, n_values, dtype=int)
+                ).tolist()
+                grid[param] = [(val,) for val in vals]
 
     return grid
 

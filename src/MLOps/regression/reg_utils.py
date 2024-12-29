@@ -8,7 +8,7 @@ from src.MLOps.utils.base import BaseEstimator
 def generic_regression(regressor: BaseEstimator,  X: np.ndarray, y: np.ndarray, *args, **kwargs
                        ) -> tuple[np.ndarray, list[float], Any]:
     """
-    Perform linear regression with k-fold cross-validation.
+    Perform regression with k-fold cross-validation.
 
     Args:
         X (np.ndarray): Feature matrix.

@@ -10,7 +10,7 @@ from src.MLOps.utils.ml_utils import k_fold_cross, standard_pipeline
 def generic_classification(classifier: BaseEstimator,  X: np.ndarray, y: np.ndarray, *args, **kwargs
                        ) -> tuple[np.ndarray, list[float], Any]:
     """
-    Perform linear regression with k-fold cross-validation.
+    Perform classification with k-fold cross-validation.
 
     Args:
         X (np.ndarray): Feature matrix.

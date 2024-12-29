@@ -145,6 +145,21 @@ def gradientboosting(model: Model, *args, **kwargs) -> str:
     return model.log_model(MlModel.GRADIENT_BOOSTING_CLASSIFIER, predictions = predictions, params = {}, importances = model_importances, final_model = final_model)
 
 def log_from_best(model: Model, *args, **kwargs) -> str:
+    """
+    Trains, tests and logs performance from multiple models based on the project type.
+
+    Depending on whether the current project is a classification or regression task,
+    this function will log predictions using a set of predefined models suitable for 
+    the task.
+
+    Args:
+        model (Model): The model object containing project details and methods for logging predictions.
+        *args: Additional positional arguments to pass to the logging method.
+        **kwargs: Additional keyword arguments to pass to the logging method.
+
+    Returns:
+        str: A log string containing the predictions from the best performing model.
+    """
     from sklearn.linear_model import LinearRegression
     from sklearn.neural_network import MLPRegressor
     from sklearn.tree import DecisionTreeRegressor

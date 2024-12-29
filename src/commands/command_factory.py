@@ -2,7 +2,8 @@ from src.MLOps.regression.regression import linreg
 from src.commands.proj_cmds import (create, set_current_project, 
                                     list_projects, delete, pcp, 
                                     add_data, read_data, make_X_y, 
-                                    clean_data, log_model, summary
+                                    clean_data, log_model, summary,
+                                    save, load_project_from_file
                                     )
 from src.commands.ml_cmds import (linreg, mlpreg, naivebayes, mlpclas, 
                                   logisticreg, decisiontree, randomforest, 
@@ -43,7 +44,9 @@ COMMANDS: dict[str, CommandFn] = {
     "make_X_y": make_X_y,
     "clean_data": clean_data,
     "summary": summary,
-    "log_best" : log_from_best
+    "log_best" : log_from_best,
+    "save": save,
+    "load": load_project_from_file
 }
 
 

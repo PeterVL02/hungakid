@@ -146,3 +146,29 @@ def summary(model: Model, *args, **kwargs) -> str:
         str: A summary of the current project.
     """
     return model.summary()
+
+def save(model: Model, *args, **kwargs) -> str:
+    """
+    Saves the current project.
+
+    Args:
+        model (Model): Parsed automatically by the command parser.
+        overwrite (bool): Whether to overwrite the existing file if it exists.
+
+    Returns:
+        str: Optional message to display to the user.
+    """
+    return model.save(*args, **kwargs)
+
+def load_project_from_file(model: Model, alias: str, *args, **kwargs) -> str:
+    """
+    Loads a project from a file.
+
+    Args:
+        model (Model): Parsed automatically by the command parser.
+        alias (str): Alias of the project to load.
+
+    Returns:
+        str: Optional message to display to the user.
+    """
+    return model.load_project_from_file(alias, *args, **kwargs)

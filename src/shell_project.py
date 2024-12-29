@@ -2,6 +2,7 @@ from pandas import DataFrame, read_csv
 from dataclasses import dataclass, field
 import numpy as np
 import os
+import pickle
 
 from src.MLOps.utils.stat_utils import accuracy_confidence_interval, mse_confidence_interval
 from src.commands.command_utils import MlModel, ProjectType
@@ -54,9 +55,11 @@ class ShellProject:
     def clean_data(self) -> str:
         if self.df is None:
             raise ValueError("Project has no dataframe")
+        obs_pre = len(self.df)
         self.df.dropna(inplace=True)
         self.is_cleaned = True
-        return "Data cleaned successfully."
+        obs_post = len(self.df)
+        return f"Data cleaned successfully. Observations dropped: {obs_pre - obs_post}"
 
     def log_model(self, model_name: MlModel | str, predictions: np.ndarray, params: dict[str, float | int | str]) -> str:
         if self.X is None or self.y is None:
@@ -84,7 +87,9 @@ class ShellProject:
             return "No models logged yet."
         
         summary_str = "Model Summary:\n"
-        for model_name, data in self.modeldata.items():
+        sorted_models = sorted(self.modeldata.items(), key=lambda item: item[1]['score'], reverse=False)
+        
+        for model_name, data in sorted_models:
             summary_str += f"Model: {model_name}\n"
             for key, value in data.items():
                 summary_str += f"  {key}: {value}\n"
@@ -99,6 +104,51 @@ class ShellProject:
             raise ValueError("No models provided.")
         log_predictions_from_best(*models, project=self, cv=cv, n_values=n_values)
         return "Predictions logged successfully."
-
+    
+    def save(self, overwrite: bool = False) -> str:
+        project_path = f'projects/{self.project_name}'
+        if not os.path.exists(project_path):
+            os.makedirs(project_path)
+        elif not overwrite:
+            raise ValueError(f"Project {self.project_name} already exists. Use -overwrite=True to overwrite.")
+        else:
+            print(f"Warning: Overwriting project {self.project_name}.")
+        
+        if self.df is not None:
+            self.df.to_csv(f'{project_path}/df.csv', index=False)
+        if self.X is not None:
+            np.save(f'{project_path}/X.npy', self.X)
+        if self.y is not None:
+            np.save(f'{project_path}/y.npy', self.y)
+        if self.modeldata:
+            modeldata_path = f'{project_path}/modeldata.pkl'
+            with open(modeldata_path, 'wb') as f:
+                pickle.dump(self.modeldata, f)
+        with open(f'{project_path}/type.txt', 'w') as f:
+            f.write(self.project_type)
+        
+        return f"Project {self.project_name} saved successfully."
+    
+    def load_project_from_file(self, alias: str) -> str:
+        project_path = f'projects/{alias}'
+        if not os.path.exists(project_path):
+            raise ValueError(f"Project {alias} not found")
+        try:
+            self.df = read_csv(f'{project_path}/df.csv')
+        except FileNotFoundError:
+            print("Warning: Dataframe not found.")
+        try:
+            self.X = np.load(f'{project_path}/X.npy', allow_pickle=True)
+            self.y = np.load(f'{project_path}/y.npy', allow_pickle=True)
+        except FileNotFoundError:
+            print("Warning: X and y not found.")
+        try:
+            with open(f'{project_path}/modeldata.pkl', 'rb') as f:
+                self.modeldata = pickle.load(f)
+        except FileNotFoundError:
+            print("Warning: Model data not found.")
+        return f"Project {alias} loaded successfully."
+            
+        
     def __str__(self) -> str:
         return f"Project: {self.project_name}, Type: {self.project_type}"

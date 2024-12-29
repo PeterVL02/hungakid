@@ -6,6 +6,7 @@ from src.MLOps.utils.base import BaseEstimator
 from pandas import DataFrame
 from dataclasses import dataclass, field
 import numpy as np
+import os
 
 @dataclass
 class ProjectStore(Model):
@@ -88,3 +89,20 @@ class ProjectStore(Model):
             raise ValueError("No current project set")
         
         return self.projects[self.current_project].log_predictions_from_best(*models, **kwargs)
+    
+    def save(self, overwrite: bool = False) -> str:
+        if not self.current_project:
+            raise ValueError("No current project set")
+        
+        return self.projects[self.current_project].save(overwrite=overwrite)
+    
+    def load_project_from_file(self, alias: str) -> str:
+        if os.path.exists(f'projects/{alias}'):
+            with open(f'projects/{alias}/type.txt', 'r') as f:
+                type_ = ProjectType(f.read())
+            self.create(alias, type_)
+        else:
+            raise ValueError(f"Project {alias} not found")
+        if not self.current_project:
+            raise ValueError("No current project set")
+        return self.projects[self.current_project].load_project_from_file(alias = alias)

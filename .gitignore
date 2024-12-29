@@ -4,3 +4,5 @@ src/commands/__pycache__
 src/MLOps/classification/__pycache__
 src/MLOps/regression/__pycache__
 src/MLOps/utils/__pycache__
+data/
+projects/
