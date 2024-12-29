@@ -1,6 +1,7 @@
 /__pycache__
 src/__pycache__
 src/commands/__pycache__
+src/MLOps/__pycache__
 src/MLOps/classification/__pycache__
 src/MLOps/regression/__pycache__
 src/MLOps/utils/__pycache__
