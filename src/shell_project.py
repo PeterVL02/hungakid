@@ -26,19 +26,29 @@ class ShellProject:
     modeldata: dict[str, dict[str, float | int | str]] = field(default_factory=dict)
     
     def add_df(self, df_name: str) -> str:
+        for file in os.listdir('data'):
+            os.rename(f'data/{file}', f'data/{file.lower()}')
+        
         if not os.path.exists(f'data/{df_name}.csv'):
-            raise ValueError(f"Dataframe {df_name} not found")
+            raise ValueError(f"Dataframe {df_name} not found.")
         self.df = read_csv(f'data/{df_name}.csv')
+        for col in self.df.columns:
+            if col.lower() == 'id':
+                self.df.drop(col, axis=1, inplace=True)
+            else:
+                self.df.rename(columns={col: col.lower()}, inplace=True)
         return "Dataframe added successfully."
 
     def read_data(self, head: int = 5) -> DataFrame:
+        if not self.is_cleaned:
+            print("Warning: Data not cleaned. Run clean_data to clean data and rerun read_data to be safe...")
         if self.df is not None:
             return self.df.head(head)
         raise ValueError("Project has no dataframe")
 
     def make_X_y(self, target: str) -> str:
         if not self.is_cleaned:
-            print("Warning: Data not cleaned. Run clean to clean data and rerun make_X_y to be safe...")
+            print("Warning: Data not cleaned. Run clean_data to clean data and rerun make_X_y to be safe...")
         if self.df is None:
             raise ValueError("Project has no dataframe. Use add_data to add a dataframe.")
         if target not in self.df.columns:
@@ -46,7 +56,21 @@ class ShellProject:
         for col in self.df.columns:
             if col.lower() == 'id':
                 self.df.drop(col, axis=1, inplace=True)
-
+        
+        if self.project_type == ProjectType.CLASSIFICATION:
+            if isinstance(self.df[target][0], float):
+                raise ValueError("Target column is not categorical. Use regression project type. Otherwise, convert target to string.")
+            num_unique = len(self.df[target].unique())
+            if num_unique > 15:
+                print(f"Warning: Target column has {num_unique} unique values. Consider reducing unique values for better performance.")
+            else:
+                print(f"Data has {num_unique} classes.")
+        elif self.project_type == ProjectType.REGRESSION:
+            if isinstance(self.df[target][0], str):
+                raise ValueError("Target column is not numerical. Use classification project type. Otherwise, convert target to float.")
+            if len(self.df[target].unique()) < 15:
+                print("Warning: Target column has few unique values.")
+            
         self.df = onehot_encode_string_columns(self.df, ignore_columns=[target])
         self.y = np.array(self.df[target].values)
 
@@ -56,7 +80,7 @@ class ShellProject:
 
     def clean_data(self) -> str:
         if self.df is None:
-            raise ValueError("Project has no dataframe")
+            raise ValueError("Project has no dataframe.")
         obs_pre = len(self.df)
         self.df.dropna(inplace=True)
         self.is_cleaned = True
@@ -73,7 +97,7 @@ class ShellProject:
             score, CI_lower, CI_upper = mse_confidence_interval(self.y, predictions, len(params))
 
         else:
-            raise ValueError(f"Project type {self.project_type} not recognized")
+            raise ValueError(f"Project type {self.project_type} not recognized.")
 
         print(f'CI: [{CI_lower}, {CI_upper}] <==> {score} +- {CI_upper - score}' )
         self.modeldata[model_name] = {
@@ -134,7 +158,7 @@ class ShellProject:
     def load_project_from_file(self, alias: str) -> str:
         project_path = f'projects/{alias}'
         if not os.path.exists(project_path):
-            raise ValueError(f"Project {alias} not found")
+            raise ValueError(f"Project {alias} not found.")
         try:
             self.df = read_csv(f'{project_path}/df.csv')
         except FileNotFoundError:
@@ -153,7 +177,7 @@ class ShellProject:
     
     def plot(self, cmd: str, labels: str | list[str], show: bool = False) -> str:
         if self.df is None:
-            raise ValueError("Project has no dataframe")
+            raise ValueError("Project has no dataframe.")
         if isinstance(labels, str):
             self.plotter.plot_interact(cmd = cmd, series = np.array(self.df[labels].values), label = labels, show = show)
         elif isinstance(labels, list):
@@ -171,9 +195,8 @@ class ShellProject:
     
     def stats(self) -> str:
         if self.df is None:
-            raise ValueError("Project has no dataframe")
+            raise ValueError("Project has no dataframe.")
         return self.df.describe().to_string()
-            
         
     def __str__(self) -> str:
         return f"Project: {self.project_name}, Type: {self.project_type}"

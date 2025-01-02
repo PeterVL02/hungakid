@@ -15,10 +15,15 @@ def create(model: Model, alias: str, type: str, *args, **kwargs) -> str:
     Returns:
         str: Optional message to display to the user.
     """
+    if args:
+        print(f"Warning: extra arguments {args} will be ignored.")
+    elif kwargs:
+        print(f"Warning: extra arguments {kwargs} will be ignored.")
+        
     new_type = convert_to_type(type)
     return model.create(alias, new_type)
 
-def delete(model: Model, alias: str, *args, **kwargs) -> str:
+def delete(model: Model, alias: str, from_dir: bool = False, *args, **kwargs) -> str:
     """
     Deletes the project with the given alias.
 
@@ -29,7 +34,12 @@ def delete(model: Model, alias: str, *args, **kwargs) -> str:
     Returns:
         str: Optional message to display to the user.
     """
-    return model.delete(alias)
+    if args:
+        print(f"Warning: extra arguments {args} will be ignored.")
+    elif kwargs:
+        print(f"Warning: extra arguments {kwargs} will be ignored.")
+    
+    return model.delete(alias, from_dir = from_dir)
 
 def list_projects(model: Model, *args, **kwargs) -> str:
     """
@@ -41,6 +51,11 @@ def list_projects(model: Model, *args, **kwargs) -> str:
     Returns:
         list[str]: A list of project aliases.
     """
+    if args:
+        print(f"Warning: extra arguments {args} will be ignored.")
+    elif kwargs:
+        print(f"Warning: extra arguments {kwargs} will be ignored.")
+        
     return model.list_projects()
 
 def set_current_project(model: Model, alias: str, *args, **kwargs) -> str:
@@ -54,6 +69,11 @@ def set_current_project(model: Model, alias: str, *args, **kwargs) -> str:
     Returns:
         str: Optional message to display to the user.
     """
+    if args:
+        print(f"Warning: extra arguments {args} will be ignored.")
+    elif kwargs:
+        print(f"Warning: extra arguments {kwargs} will be ignored.")
+        
     return model.set_current_project(alias)
 
 def pcp(model: Model) -> str:
@@ -79,6 +99,11 @@ def add_data(model: Model, df_name: str, *args, **kwargs) -> str:
     Returns:
         None
     """
+    if args:
+        print(f"Warning: extra arguments {args} will be ignored.")
+    elif kwargs:
+        print(f"Warning: extra arguments {kwargs} will be ignored.")
+        
     return model.add_data(df_name)
 
 def read_data(model: Model, head: int = 5, *args, **kwargs) -> DataFrame:
@@ -92,6 +117,11 @@ def read_data(model: Model, head: int = 5, *args, **kwargs) -> DataFrame:
     Returns:
         str: A string representation of the DataFrame.
     """
+    if args:
+        print(f"Warning: extra arguments {args} will be ignored.")
+    elif kwargs:
+        print(f"Warning: extra arguments {kwargs} will be ignored.")
+        
     return model.read_data(head)
 
 def make_X_y(model: Model, target: str, *args, **kwargs) -> str:
@@ -105,6 +135,11 @@ def make_X_y(model: Model, target: str, *args, **kwargs) -> str:
     Returns:
         str: Optional message to display to the user.
     """
+    if args:
+        print(f"Warning: extra arguments {args} will be ignored.")
+    elif kwargs:
+        print(f"Warning: extra arguments {kwargs} will be ignored.")
+        
     return model.make_X_y(target)
 
 def clean_data(model: Model, *args, **kwargs) -> str:
@@ -117,6 +152,11 @@ def clean_data(model: Model, *args, **kwargs) -> str:
     Returns:
         str: Optional message to display to the user.
     """
+    if args:
+        print(f"Warning: extra arguments {args} will be ignored.")
+    elif kwargs:
+        print(f"Warning: extra arguments {kwargs} will be ignored.")
+        
     return model.clean_data()
 
 def log_model(model: Model, model_name: str, predictions: np.ndarray, params: dict[str, float | int | str], *args, **kwargs) -> str:
@@ -132,6 +172,11 @@ def log_model(model: Model, model_name: str, predictions: np.ndarray, params: di
     Returns:
         str: Optional message to display to the user.
     """
+    if args:
+        print(f"Warning: extra arguments {args} will be ignored.")
+    elif kwargs:
+        print(f"Warning: extra arguments {kwargs} will be ignored.")
+        
     model_name = convert_to_ml_type(model_name)
     return model.log_model(model_name, predictions, params)
 
@@ -145,9 +190,14 @@ def summary(model: Model, *args, **kwargs) -> str:
     Returns:
         str: A summary of the current project.
     """
+    if args:
+        print(f"Warning: extra arguments {args} will be ignored.")
+    elif kwargs:
+        print(f"Warning: extra arguments {kwargs} will be ignored.")
+        
     return model.summary()
 
-def save(model: Model, *args, **kwargs) -> str:
+def save(model: Model, overwrite: bool = False, *args, **kwargs) -> str:
     """
     Saves the current project.
 
@@ -158,7 +208,12 @@ def save(model: Model, *args, **kwargs) -> str:
     Returns:
         str: Optional message to display to the user.
     """
-    return model.save(*args, **kwargs)
+    if args:
+        print(f"Warning: extra arguments {args} will be ignored.")
+    elif kwargs:
+        print(f"Warning: extra arguments {kwargs} will be ignored.")
+    
+    return model.save(overwrite=overwrite)
 
 def load_project_from_file(model: Model, alias: str, *args, **kwargs) -> str:
     """
@@ -170,8 +225,13 @@ def load_project_from_file(model: Model, alias: str, *args, **kwargs) -> str:
 
     Returns:
         str: Optional message to display to the user.
-    """
-    return model.load_project_from_file(alias, *args, **kwargs)
+    """        
+    if args:
+        print(f"Warning: extra arguments {args} will be ignored.")
+    elif kwargs:
+        print(f"Warning: extra arguments {kwargs} will be ignored.")
+        
+    return model.load_project_from_file(alias)
 
 def plot(model: Model, cmd: str, labels: str | list[str], show: bool = False, *args, **kwargs) -> str:
     """
@@ -186,6 +246,11 @@ def plot(model: Model, cmd: str, labels: str | list[str], show: bool = False, *a
     Returns:
         str: The result of the plot command.
     """
+    if args:
+        print(f"Warning: extra arguments {args} will be ignored.")
+    elif kwargs:
+        print(f"Warning: extra arguments {kwargs} will be ignored.")
+        
     return model.plot(cmd, labels, show)
 
 def show(model: Model, *args, **kwargs) -> str:
@@ -198,6 +263,11 @@ def show(model: Model, *args, **kwargs) -> str:
     Returns:
         str: The result of the show command.
     """
+    if args:
+        print(f"Warning: extra arguments {args} will be ignored.")
+    elif kwargs:
+        print(f"Warning: extra arguments {kwargs} will be ignored.")
+        
     return model.show()
 
 def stats(model: Model, *args, **kwargs) -> str:
@@ -210,4 +280,9 @@ def stats(model: Model, *args, **kwargs) -> str:
     Returns:
         str: The result of the stats command.
     """
+    if args:
+        print(f"Warning: extra arguments {args} will be ignored.")
+    elif kwargs:
+        print(f"Warning: extra arguments {kwargs} will be ignored.")
+        
     return model.stats()

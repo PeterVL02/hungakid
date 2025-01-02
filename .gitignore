@@ -7,3 +7,4 @@ src/MLOps/regression/__pycache__
 src/MLOps/utils/__pycache__
 data/
 projects/
+tests/__pycache__

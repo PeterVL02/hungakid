@@ -1,8 +1,8 @@
-from src.MLOps.regression.regression import linreg
+from src.cliexception import CLIException
 from src.commands.proj_cmds import (create, set_current_project, 
                                     list_projects, delete, pcp, 
                                     add_data, read_data, make_X_y, 
-                                    clean_data, log_model, summary,
+                                    clean_data, summary,
                                     save, load_project_from_file,
                                     plot, show, stats
                                     )
@@ -12,6 +12,7 @@ from src.commands.ml_cmds import (linreg, mlpreg, naivebayes, mlpclas,
 
 from typing import Any, Callable
 from pandas import DataFrame
+from colorama import Fore, Style
 
 CommandFn = Callable[..., Any]
 
@@ -42,7 +43,7 @@ COMMANDS: dict[str, CommandFn] = {
     "help" : list_cmds,
     "add_data": add_data,
     "read_data": read_data,
-    "make_X_y": make_X_y,
+    "make_x_y": make_X_y,
     "clean_data": clean_data,
     "summary": summary,
     "log_best" : log_from_best,
@@ -62,3 +63,6 @@ def execute_cmd(cmd: str, *args, **kwargs: Any) -> None:
     result = COMMANDS[cmd](*args, **kwargs)
     if isinstance(result, str): print(result)
     elif isinstance(result, DataFrame): print(result)
+    elif isinstance(result, CLIException):
+        raise result
+    

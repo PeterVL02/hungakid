@@ -14,6 +14,9 @@ class Command:
     @staticmethod
     def from_string(command: str) -> "Command":
         # 1) Split using shlex
+        if not command.islower():
+            print("Warning: Command will be converted to lowercase.")
+        command = command.lower()
         parts = shlex.split(command)
         if not parts:
             raise ValueError("Command must not be empty.")

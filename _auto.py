@@ -56,11 +56,17 @@ def main() -> None:
         "chproj clas_project",
         "log_best -n_values 2",
         "summary",
+        "save",
+        "plot hist sepallengthcm",
+        "plot scatter [sepallengthcm, sepalwidthcm]",
+        "plot box sepallengthcm",
+        "show",
+        "stats",
+        "plot box sepalwidthcm -show True",
+        "delete clas_project -from_dir True",
         "exit",
     ]
-    
-    # simulate_cli(reg_commands)
-    # simulate_cli(clas_commands)
+
     simulate_cli(full_commands)
 
 if __name__ == "__main__":
