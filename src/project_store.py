@@ -62,7 +62,12 @@ class ProjectStore(Model):
         return f"Project {alias} deleted successfully. Current project is {self.current_project}."
 
     def list_projects(self) -> str:
-        return str(list(self.projects.keys()))
+        in_use = str(list(self.projects.keys()))
+        with open('config/paths.json', 'r') as f:
+            paths = json.load(f)
+        projects_dir = paths['projects_dir']
+        saved_projects = os.listdir(projects_dir)
+        return f"Projects in use: {in_use}\nProjects saved in projects directory: {str(saved_projects)}"
     
     def set_current_project(self, alias: str) -> str:
         if alias not in self.projects:

@@ -107,7 +107,7 @@ class ShellProject:
             raise ValueError(f"Project type {self.project_type} not recognized.")
 
 
-        add_note(self, f'CI: [{CI_lower:.3f}, {CI_upper:.3f}] <==> {score:.3f} +- {(CI_upper - score):.3f}' )
+        add_note(self, f'CI: [{CI_lower:.4f}, {CI_upper:.4f}] <==> {score:.4f} +- {(CI_upper - score):.4f}' )
         
         previous_model = self.modeldata.get(model_name, None)
         if previous_model and previous_model['score'] >= score: # type: ignore

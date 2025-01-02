@@ -15,6 +15,8 @@ expected = {
 results = {
     'linreg' : 'CI: [0.080, 0.125] <==> 0.099 +- 0.027',
     'linreg_end' : 'Model linear_regression logged successfully.',
+    'logreg' : 'CI: [0.9107, 0.9826] <==> 0.9467 +- 0.0360',
+    'logreg_end' : 'Model logistic_regression logged successfully.',
 }
 
 class TestML(unittest.TestCase):        
@@ -27,7 +29,7 @@ class TestML(unittest.TestCase):
             "exit",
         ]
         result = simulate_cli(commands)
-        converted = convert_expected(expected['create'], expected['add_data'], expected['not cleaned'], expected['x_y'],  results['linreg_end'], results['linreg'])
+        converted = results['linreg']
 
         # Extract CI bounds from both strings
         result_ci_bounds = extract_ci_bounds(result)
@@ -46,8 +48,40 @@ class TestML(unittest.TestCase):
         print(converted_ci_low, converted_ci_high)
 
         # Compare with tolerance
-        self.assertAlmostEqual(result_ci_low, converted_ci_low, places=2)
-        self.assertAlmostEqual(result_ci_high, converted_ci_high, places=2)
+        self.assertLess(abs(result_ci_low - converted_ci_low), 0.001)
+        self.assertLess(abs(result_ci_high - converted_ci_high), 0.001)
+        
+    def test_logistic(self):
+        commands = [
+            "create temporaryproj c",
+            "add_data iris",
+            "make_x_y species",
+            "logisticreg",
+            "exit",
+        ]
+        result = simulate_cli(commands)
+        converted = results['logreg']
+        
+        # Extract CI bounds from both strings
+        result_ci_bounds = extract_ci_bounds(result)
+        converted_ci_bounds = extract_ci_bounds(converted)
+        
+        if None in result_ci_bounds or None in converted_ci_bounds:
+            self.fail("CI bounds extraction returned None")
+            
+            
+        result_ci_low, result_ci_high = result_ci_bounds
+        converted_ci_low, converted_ci_high = converted_ci_bounds
+        
+        assert result_ci_low is not None and converted_ci_low is not None
+        assert result_ci_high is not None and converted_ci_high is not None
+        
+        print(result_ci_low, result_ci_high)
+        print(converted_ci_low, converted_ci_high)
+        
+        # Compare with tolerance
+        self.assertLess(abs(result_ci_low - converted_ci_low), 0.001)
+        self.assertLess(abs(result_ci_high - converted_ci_high), 0.001)
 
     def test_full_run(self):
         commands = [
