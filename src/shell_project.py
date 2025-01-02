@@ -2,13 +2,14 @@ from pandas import DataFrame, read_csv
 from dataclasses import dataclass, field
 import numpy as np
 import os
-import pickle
+import json
 
 from src.MLOps.utils.stat_utils import accuracy_confidence_interval, mse_confidence_interval
 from src.commands.command_utils import MlModel, ProjectType
 from src.MLOps.utils.ml_utils import onehot_encode_string_columns
 from src.MLOps.utils.base import BaseEstimator
 from src.MLOps.tuning import log_predictions_from_best
+from src.MLOps.visuals.crud.cruds import Plotter
 
 
 @dataclass
@@ -20,6 +21,7 @@ class ShellProject:
     df: DataFrame | None = None
     X: np.ndarray | None = None
     y: np.ndarray | None = None
+    plotter = Plotter()
     
     modeldata: dict[str, dict[str, float | int | str]] = field(default_factory=dict)
     
@@ -121,9 +123,9 @@ class ShellProject:
         if self.y is not None:
             np.save(f'{project_path}/y.npy', self.y)
         if self.modeldata:
-            modeldata_path = f'{project_path}/modeldata.pkl'
-            with open(modeldata_path, 'wb') as f:
-                pickle.dump(self.modeldata, f)
+            modeldata_path = f'{project_path}/modeldata.json'
+            with open(modeldata_path, 'w') as f:
+                json.dump(self.modeldata, f, indent=4)
         with open(f'{project_path}/type.txt', 'w') as f:
             f.write(self.project_type)
         
@@ -143,11 +145,34 @@ class ShellProject:
         except FileNotFoundError:
             print("Warning: X and y not found.")
         try:
-            with open(f'{project_path}/modeldata.pkl', 'rb') as f:
-                self.modeldata = pickle.load(f)
+            with open(f'{project_path}/modeldata.json', 'r') as f:
+                self.modeldata = json.load(f)
         except FileNotFoundError:
             print("Warning: Model data not found.")
         return f"Project {alias} loaded successfully."
+    
+    def plot(self, cmd: str, labels: str | list[str], show: bool = False) -> str:
+        if self.df is None:
+            raise ValueError("Project has no dataframe")
+        if isinstance(labels, str):
+            self.plotter.plot_interact(cmd = cmd, series = np.array(self.df[labels].values), label = labels, show = show)
+        elif isinstance(labels, list):
+            _series: list[np.ndarray] = []
+            for label in labels:
+                _series.append(np.array(self.df[label].values))
+            self.plotter.plot_interact(cmd = cmd, series = _series, label = labels, show = show)
+        else:
+            raise ValueError('Labels must be of type str or list of strings.')
+        return 'Plot created successfully.'
+    
+    def show(self) -> str:
+        self.plotter.show()
+        return 'Plots shown successfully.'
+    
+    def stats(self) -> str:
+        if self.df is None:
+            raise ValueError("Project has no dataframe")
+        return self.df.describe().to_string()
             
         
     def __str__(self) -> str:

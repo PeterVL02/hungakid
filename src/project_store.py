@@ -106,3 +106,21 @@ class ProjectStore(Model):
         if not self.current_project:
             raise ValueError("No current project set")
         return self.projects[self.current_project].load_project_from_file(alias = alias)
+
+    def plot(self, cmd: str, labels: str | list[str], show: bool = False) -> str:
+        if not self.current_project:
+            raise ValueError("No current project set")
+        
+        return self.projects[self.current_project].plot(cmd, labels, show)
+    
+    def show(self) -> str:
+        if not self.current_project:
+            raise ValueError("No current project set")
+        
+        return self.projects[self.current_project].show()
+    
+    def stats(self) -> str:
+        if not self.current_project:
+            raise ValueError("No current project set")
+        
+        return self.projects[self.current_project].stats()

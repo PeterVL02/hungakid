@@ -3,7 +3,8 @@ from src.commands.proj_cmds import (create, set_current_project,
                                     list_projects, delete, pcp, 
                                     add_data, read_data, make_X_y, 
                                     clean_data, log_model, summary,
-                                    save, load_project_from_file
+                                    save, load_project_from_file,
+                                    plot, show, stats
                                     )
 from src.commands.ml_cmds import (linreg, mlpreg, naivebayes, mlpclas, 
                                   logisticreg, decisiontree, randomforest, 
@@ -46,7 +47,10 @@ COMMANDS: dict[str, CommandFn] = {
     "summary": summary,
     "log_best" : log_from_best,
     "save": save,
-    "load": load_project_from_file
+    "load": load_project_from_file,
+    "plot" : plot,
+    "show" : show,
+    "stats" : stats
 }
 
 

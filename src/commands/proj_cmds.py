@@ -172,3 +172,42 @@ def load_project_from_file(model: Model, alias: str, *args, **kwargs) -> str:
         str: Optional message to display to the user.
     """
     return model.load_project_from_file(alias, *args, **kwargs)
+
+def plot(model: Model, cmd: str, labels: str | list[str], show: bool = False, *args, **kwargs) -> str:
+    """
+    Generates a plot based on the given command and labels.
+
+    Args:
+        model (Model): The model containing the project data. Parsed automatically.
+        cmd (str): The command to generate the plot.
+        labels (str | list[str]): The labels to be used in the plot.
+        show (bool, optional): Whether to display the plot. Defaults to False.
+
+    Returns:
+        str: The result of the plot command.
+    """
+    return model.plot(cmd, labels, show)
+
+def show(model: Model, *args, **kwargs) -> str:
+    """
+    Displays the plot for the current project.
+
+    Args:
+        model (Model): The model containing the project data. Parsed automatically.
+
+    Returns:
+        str: The result of the show command.
+    """
+    return model.show()
+
+def stats(model: Model, *args, **kwargs) -> str:
+    """
+    Displays the statistics for the current project.
+
+    Args:
+        model (Model): The model containing the project data. Parsed automatically.
+
+    Returns:
+        str: The result of the stats command.
+    """
+    return model.stats()
