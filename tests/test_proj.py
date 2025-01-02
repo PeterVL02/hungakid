@@ -14,7 +14,7 @@ expected = {
     'clean_data' : 'Data cleaned successfully. Observations dropped: 0',
     'make_x_y' : 'X and y created successfully.',
     'load' : 'Project temporaryproj loaded successfully.',
-    'modeldata not found' : 'Warning: Model data not found.'
+    'modeldata not found' : 'Warning: Model data not found.',
     'delete' : 'Project temporaryproj deleted successfully from projects directory.',
 }
 
@@ -97,7 +97,7 @@ class TestCommands(unittest.TestCase):
             "exit",
         ]
         result3 = simulate_cli(commands)
-        converted3 = convert_expected()
+        converted3 = convert_expected(expected['delete'])
         
         self.assert_(not os.path.exists(f"{projects_dir}/temporaryproj/"))
         self.assert_(os.listdir(projects_dir) == original_saved_projects)
