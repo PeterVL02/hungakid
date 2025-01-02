@@ -1,6 +1,7 @@
 from src.MLOps.utils.base import BaseEstimator
 from src.MLOps.classification.clas_utils import generic_classification
 from src.MLOps.regression.reg_utils import generic_regression
+from src.cliexception import chain, add_warning, add_note
 
 import numpy as np
 from sklearn.model_selection import GridSearchCV
@@ -125,6 +126,7 @@ def tune_models(*models: BaseEstimator, X: np.ndarray, y: np.ndarray, cv: int = 
     
     return list(zip(models, params))
 
+@chain
 @ignore_warnings()
 def log_predictions_from_best(*models: BaseEstimator, project: "ShellProject",  cv: int = 10, n_values: int = 3) -> None: # type: ignore to avoid circular import #TODO fix it
     """
@@ -146,7 +148,7 @@ def log_predictions_from_best(*models: BaseEstimator, project: "ShellProject",  
                 preds = generic_classification(model, X, y, **params)[0]
                 project.log_model(model.__class__.__name__, preds, params)
             except RuntimeError as e:
-                print(Fore.RED + f"Model {model.__class__.__name__} failed. Skipping..." + Style.RESET_ALL)
+                add_warning(project, f"Model {model.__class__.__name__} failed. Skipping...")
 
     elif type_ == 'regression':
         for model, params in tqdm(data, desc=f"Getting predictions from model"):
@@ -154,7 +156,7 @@ def log_predictions_from_best(*models: BaseEstimator, project: "ShellProject",  
                 preds = generic_regression(model, X, y, **params)[0]
                 project.log_model(model.__class__.__name__, preds, params)
             except RuntimeError as e:
-                print(Fore.RED + f"Model {model.__class__.__name__} failed. Skipping..." + Style.RESET_ALL)
+                add_warning(project, f"Model {model.__class__.__name__} failed. Skipping...")
 
 def _main() -> None:
     from sklearn.linear_model import LinearRegression

@@ -2,6 +2,7 @@ from src.commands.project_store_protocol import Model
 from src.shell_project import ShellProject, ProjectType
 from src.commands.command_utils import MlModel
 from src.MLOps.utils.base import BaseEstimator
+from src.cliexception import chain, add_warning, CLIResult, add_note
 
 from pandas import DataFrame
 from dataclasses import dataclass, field
@@ -13,12 +14,13 @@ class ProjectStore(Model):
     projects: dict[str, ShellProject] = field(default_factory=dict)
     current_project: str | None  = None
 
+    @chain
     def create(self, alias: str, type: ProjectType) -> str:
         if alias in self.projects:
             raise ValueError(f"Project {alias} already exists.")
         
         if alias in os.listdir('projects'):
-            print(f"Warning: Project {alias} already exists in projects directory.")
+            add_warning(self, f"Warning: Project {alias} already exists in projects directory.")
         
         self.projects[alias] = ShellProject(project_type=type, project_name=alias)
         self.set_current_project(alias)
@@ -70,7 +72,7 @@ class ProjectStore(Model):
         
         return self.projects[self.current_project].add_df(df_name)
 
-    def read_data(self, head: int = 5) -> DataFrame:
+    def read_data(self, head: int = 5) -> str:
         if not self.current_project:
             raise ValueError("No current project set.")
         
@@ -88,9 +90,8 @@ class ProjectStore(Model):
         
         return self.projects[self.current_project].clean_data()
 
-    def log_model(self, model_name: MlModel, predictions: np.ndarray, params: dict[str, float | int | str], **kwargs) -> str:
-        if kwargs:
-            print("kwargs: ", kwargs)
+    @chain
+    def log_model(self, model_name: MlModel, predictions: np.ndarray, params: dict[str, float | int | str], **kwargs) -> str | CLIResult:
         if not self.current_project:
             raise ValueError("No current project set.")
         
@@ -102,7 +103,7 @@ class ProjectStore(Model):
         
         return self.projects[self.current_project].summary()
     
-    def log_predictions_from_best(self, *models: BaseEstimator, **kwargs) -> str:
+    def log_predictions_from_best(self, *models: BaseEstimator, **kwargs) -> str | CLIResult:
         if not self.current_project:
             raise ValueError("No current project set.")
         

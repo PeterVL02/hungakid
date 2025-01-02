@@ -4,6 +4,7 @@ from tqdm import tqdm
 
 from src.MLOps.utils.ml_utils import k_fold_cross, standard_pipeline
 from src.MLOps.utils.base import BaseEstimator
+from src.cliexception import add_note
 
 def generic_regression(regressor: BaseEstimator,  X: np.ndarray, y: np.ndarray, *args, **kwargs
                        ) -> tuple[np.ndarray, list[float], Any]:
@@ -43,6 +44,5 @@ def generic_regression(regressor: BaseEstimator,  X: np.ndarray, y: np.ndarray, 
     final_model.__init__(**kwargs)
     X, _ = standard_pipeline(X, X)
     final_model.fit(X, y)
-    print('Generic Model Scores', np.mean(scores))
 
     return np.array(predictions), scores, final_model

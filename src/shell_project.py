@@ -10,6 +10,7 @@ from src.MLOps.utils.ml_utils import onehot_encode_string_columns
 from src.MLOps.utils.base import BaseEstimator
 from src.MLOps.tuning import log_predictions_from_best
 from src.MLOps.visuals.crud.cruds import Plotter
+from src.cliexception import chain, add_warning, add_note, CLIResult
 
 
 @dataclass
@@ -39,16 +40,18 @@ class ShellProject:
                 self.df.rename(columns={col: col.lower()}, inplace=True)
         return "Dataframe added successfully."
 
-    def read_data(self, head: int = 5) -> DataFrame:
+    @chain
+    def read_data(self, head: int = 5) -> str:
         if not self.is_cleaned:
-            print("Warning: Data not cleaned. Run clean_data to clean data and rerun read_data to be safe...")
+            add_warning(self, "Warning: Data not cleaned. Run clean_data to clean data and rerun read_data to be safe...")
         if self.df is not None:
-            return self.df.head(head)
+            return self.df.head(head).to_string()
         raise ValueError("Project has no dataframe")
 
+    @chain 
     def make_X_y(self, target: str) -> str:
         if not self.is_cleaned:
-            print("Warning: Data not cleaned. Run clean_data to clean data and rerun make_X_y to be safe...")
+            add_warning(self, "Warning: Data not cleaned. Run clean_data to clean data and rerun make_X_y to be safe...")
         if self.df is None:
             raise ValueError("Project has no dataframe. Use add_data to add a dataframe.")
         if target not in self.df.columns:
@@ -62,14 +65,14 @@ class ShellProject:
                 raise ValueError("Target column is not categorical. Use regression project type. Otherwise, convert target to string.")
             num_unique = len(self.df[target].unique())
             if num_unique > 15:
-                print(f"Warning: Target column has {num_unique} unique values. Consider reducing unique values for better performance.")
+                add_warning(self, f"Warning: Target column has {num_unique} unique values. Consider reducing unique values for better performance.")
             else:
-                print(f"Data has {num_unique} classes.")
+                add_note(self, f"Note: Target column has {num_unique} unique values.")
         elif self.project_type == ProjectType.REGRESSION:
             if isinstance(self.df[target][0], str):
                 raise ValueError("Target column is not numerical. Use classification project type. Otherwise, convert target to float.")
             if len(self.df[target].unique()) < 15:
-                print("Warning: Target column has few unique values.")
+                add_warning(self, "Warning: Target column has few unique values.")
             
         self.df = onehot_encode_string_columns(self.df, ignore_columns=[target])
         self.y = np.array(self.df[target].values)
@@ -87,7 +90,8 @@ class ShellProject:
         obs_post = len(self.df)
         return f"Data cleaned successfully. Observations dropped: {obs_pre - obs_post}"
 
-    def log_model(self, model_name: MlModel | str, predictions: np.ndarray, params: dict[str, float | int | str]) -> str:
+    @chain
+    def log_model(self, model_name: MlModel | str, predictions: np.ndarray, params: dict[str, float | int | str]) -> str | CLIResult:
         if self.X is None or self.y is None:
             raise ValueError("X and y not set. Run make_X_y first.")
         if self.project_type == ProjectType.CLASSIFICATION:
@@ -99,7 +103,9 @@ class ShellProject:
         else:
             raise ValueError(f"Project type {self.project_type} not recognized.")
 
-        print(f'CI: [{CI_lower}, {CI_upper}] <==> {score} +- {CI_upper - score}' )
+
+        add_note(self, f'CI: [{CI_lower:.3f}, {CI_upper:.3f}] <==> {score:.3f} +- {(CI_upper - score):.3f}' )
+        
         self.modeldata[model_name] = {
             'score': score,
             'CI_lower': CI_lower,
@@ -123,14 +129,15 @@ class ShellProject:
         
         return summary_str[:-2]
     
-    def log_predictions_from_best(self, *models: BaseEstimator, cv: int = 10, n_values: int = 3) -> str:
+    @chain
+    def log_predictions_from_best(self, *models: BaseEstimator, cv: int = 10, n_values: int = 3) -> str | CLIResult:
         if self.X is None or self.y is None:
             raise ValueError("X and y not set. Run make_X_y first.")
         if not models:
             raise ValueError("No models provided.")
-        log_predictions_from_best(*models, project=self, cv=cv, n_values=n_values)
-        return "Predictions logged successfully."
+        return log_predictions_from_best(*models, project=self, cv=cv, n_values=n_values)
     
+    @chain   
     def save(self, overwrite: bool = False) -> str:
         project_path = f'projects/{self.project_name}'
         if not os.path.exists(project_path):
@@ -138,7 +145,7 @@ class ShellProject:
         elif not overwrite:
             raise ValueError(f"Project {self.project_name} already exists. Use -overwrite=True to overwrite.")
         else:
-            print(f"Warning: Overwriting project {self.project_name}.")
+            add_warning(self, f"Warning: Overwriting project {self.project_name}.")
         
         if self.df is not None:
             self.df.to_csv(f'{project_path}/df.csv', index=False)
@@ -155,6 +162,7 @@ class ShellProject:
         
         return f"Project {self.project_name} saved successfully."
     
+    @chain
     def load_project_from_file(self, alias: str) -> str:
         project_path = f'projects/{alias}'
         if not os.path.exists(project_path):
@@ -162,17 +170,17 @@ class ShellProject:
         try:
             self.df = read_csv(f'{project_path}/df.csv')
         except FileNotFoundError:
-            print("Warning: Dataframe not found.")
+            add_warning(self, "Warning: Dataframe not found.")
         try:
             self.X = np.load(f'{project_path}/X.npy', allow_pickle=True)
             self.y = np.load(f'{project_path}/y.npy', allow_pickle=True)
         except FileNotFoundError:
-            print("Warning: X and y not found.")
+            add_warning(self, "Warning: X and y not found.")
         try:
             with open(f'{project_path}/modeldata.json', 'r') as f:
                 self.modeldata = json.load(f)
         except FileNotFoundError:
-            print("Warning: Model data not found.")
+            add_warning(self, "Warning: Model data not found.")
         return f"Project {alias} loaded successfully."
     
     def plot(self, cmd: str, labels: str | list[str], show: bool = False) -> str:

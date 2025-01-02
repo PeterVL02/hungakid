@@ -45,6 +45,5 @@ def generic_classification(classifier: BaseEstimator,  X: np.ndarray, y: np.ndar
     final_model.__init__(**kwargs)
     X, _ = standard_pipeline(X, X)
     final_model.fit(X, y)
-    print('Generic Model Scores', np.mean(scores))
 
     return np.array(predictions), scores, final_model

@@ -106,7 +106,7 @@ def add_data(model: Model, df_name: str, *args, **kwargs) -> str:
         
     return model.add_data(df_name)
 
-def read_data(model: Model, head: int = 5, *args, **kwargs) -> DataFrame:
+def read_data(model: Model, head: int = 5, *args, **kwargs) -> str:
     """
     Reads the data from the current project.
 

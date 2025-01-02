@@ -1,4 +1,4 @@
-from src.cliexception import CLIException
+from src.cliexception import CLIResult
 from src.commands.proj_cmds import (create, set_current_project, 
                                     list_projects, delete, pcp, 
                                     add_data, read_data, make_X_y, 
@@ -59,10 +59,12 @@ def cmd_exists(cmd: str) -> bool:
     return cmd in COMMANDS
 
 
-def execute_cmd(cmd: str, *args, **kwargs: Any) -> None:
+def execute_cmd(cmd: str, *args, **kwargs: Any) -> None | CLIResult:
     result = COMMANDS[cmd](*args, **kwargs)
-    if isinstance(result, str): print(result)
-    elif isinstance(result, DataFrame): print(result)
-    elif isinstance(result, CLIException):
-        raise result
+    if isinstance(result, DataFrame): 
+        result = result.to_string()
+        result = CLIResult(result)
+    elif isinstance(result, str):
+        result = CLIResult(result)
+    return result
     

@@ -1,9 +1,11 @@
 from dataclasses import dataclass
 import shlex
 import ast
+from colorama import Fore, Style
 
 from src.commands.command_factory import cmd_exists, execute_cmd
 from src.commands.project_store_protocol import Model
+from src.cliexception import CLIResult
 
 @dataclass
 class Command:
@@ -15,7 +17,7 @@ class Command:
     def from_string(command: str) -> "Command":
         # 1) Split using shlex
         if not command.islower():
-            print("Warning: Command will be converted to lowercase.")
+            print(Fore.CYAN + "Note: Command will be converted to lowercase." + Style.RESET_ALL)
         command = command.lower()
         parts = shlex.split(command)
         if not parts:
@@ -119,5 +121,5 @@ class Command:
         return value
 
 
-    def execute(self, model: Model) -> None:
-        execute_cmd(self.cmd, model, *self.args, **self.kwargs)
+    def execute(self, model: Model) -> None | CLIResult:
+        return execute_cmd(self.cmd, model, *self.args, **self.kwargs)
