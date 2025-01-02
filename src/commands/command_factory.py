@@ -9,6 +9,7 @@ from src.commands.proj_cmds import (create, set_current_project,
 from src.commands.ml_cmds import (linreg, mlpreg, naivebayes, mlpclas, 
                                   logisticreg, decisiontree, randomforest, 
                                   gradientboosting, log_from_best)
+from src.commands.config_cmds import config
 
 from typing import Any, Callable
 from pandas import DataFrame
@@ -51,7 +52,8 @@ COMMANDS: dict[str, CommandFn] = {
     "load": load_project_from_file,
     "plot" : plot,
     "show" : show,
-    "stats" : stats
+    "stats" : stats,
+    "config" : config
 }
 
 

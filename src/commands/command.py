@@ -39,22 +39,20 @@ class Command:
         iterator = iter(processed_args)
         for token in iterator:
             if token.startswith("--"):
-                # long-form option (--key val or --key=val)
                 key = token[2:]
                 if "=" in key:
                     key, value = key.split("=", 1)
                 else:
                     value = next(iterator, None)
                     if value is None or value.startswith('-'):
-                        raise ValueError(f"Option '{token}' requires a value.")
+                        value = 'True'
                 parsed_kwargs[key] = Command._parse_value(value)
 
             elif token.startswith("-"):
-                # short-form option (-k val)
                 key = token[1:]
                 value = next(iterator, None)
                 if value is None or value.startswith('-'):
-                    raise ValueError(f"Option '{token}' requires a value.")
+                    value = 'True'
                 parsed_kwargs[key] = Command._parse_value(value)
 
             else:

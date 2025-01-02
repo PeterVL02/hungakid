@@ -29,6 +29,12 @@ def convert_to_type(type_str: str) -> ProjectType:
     Returns:
         ProjectType: The corresponding ProjectType enum.
     """
+    short_type = {
+        "c": "classification",
+        "r": "regression"
+    }
+    if type_str in short_type:
+        type_str = short_type[type_str]
     try:
         return ProjectType[type_str.upper()]
     except ValueError:

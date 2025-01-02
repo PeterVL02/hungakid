@@ -6,7 +6,7 @@ from sklearn.ensemble import RandomForestClassifier, GradientBoostingClassifier
 import numpy as np
 from typing import Any
 
-from src.MLOps.classification.clas_utils import generic_classification
+from src.MLOps.utils.ml_utils import generic_ml
 
 
 def naivebayes(X: np.ndarray, y: np.ndarray, *args, **kwargs
@@ -24,7 +24,7 @@ def naivebayes(X: np.ndarray, y: np.ndarray, *args, **kwargs
             - Class priors of the final model.
     """
     
-    predictions, scores, final_model = generic_classification(GaussianNB(), X, y, **kwargs)
+    predictions, scores, final_model = generic_ml(GaussianNB(), X, y, **kwargs)
 
     model_priors: np.ndarray[Any, Any] = final_model.class_prior_
     
@@ -46,7 +46,7 @@ def mlpclas(X: np.ndarray, y: np.ndarray, *args, **kwargs
             - Intercepts of the final model.
             - Weights of the final model.
     """
-    predictions, scores, final_model = generic_classification(MLPClassifier(), X, y, *args, **kwargs)
+    predictions, scores, final_model = generic_ml(MLPClassifier(), X, y, *args, **kwargs)
 
     model_weights: np.ndarray = final_model.coefs_
     
@@ -68,7 +68,7 @@ def logisticreg(X: np.ndarray, y: np.ndarray, *args, **kwargs
             - Intercept of the final model.
             - Coefficients of the final model.
     """
-    predictions, scores, final_model = generic_classification(LogisticRegression(), X, y, *args, **kwargs)
+    predictions, scores, final_model = generic_ml(LogisticRegression(), X, y, *args, **kwargs)
 
     model_weights: np.ndarray = final_model.coef_
     
@@ -90,7 +90,7 @@ def decisiontree(X: np.ndarray, y: np.ndarray, *args, **kwargs
             - Feature importances of the final model.
             - Tree structure of the final model.
     """
-    predictions, scores, final_model = generic_classification(DecisionTreeClassifier(), X, y, *args, **kwargs)
+    predictions, scores, final_model = generic_ml(DecisionTreeClassifier(), X, y, *args, **kwargs)
 
     model_importances: np.ndarray = final_model.feature_importances_
     
@@ -112,7 +112,7 @@ def randomforest(X: np.ndarray, y: np.ndarray, *args, **kwargs
             - Feature importances of the final model.
             - Tree structure of the final model.
     """
-    predictions, scores, final_model = generic_classification(RandomForestClassifier(), X, y, *args, **kwargs)
+    predictions, scores, final_model = generic_ml(RandomForestClassifier(), X, y, *args, **kwargs)
 
     model_importances: np.ndarray = final_model.feature_importances_
     
@@ -134,7 +134,7 @@ def gradientboosting(X: np.ndarray, y: np.ndarray, *args, **kwargs
             - Feature importances of the final model.
             - Tree structure of the final model.
     """
-    predictions, scores, final_model = generic_classification(GradientBoostingClassifier(), X, y, *args, **kwargs)
+    predictions, scores, final_model = generic_ml(GradientBoostingClassifier(), X, y, *args, **kwargs)
 
     model_importances: np.ndarray = final_model.feature_importances_
     

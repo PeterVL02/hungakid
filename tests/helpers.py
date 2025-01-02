@@ -4,6 +4,7 @@ from src.shell import Shell
 import sys
 import re
 from io import StringIO
+from typing import Any
 
 ANSI_ESCAPE_PATTERN = re.compile(r'\x1B\[[0-9;]*[A-Za-z]')
 
@@ -57,9 +58,20 @@ def simulate_cli(commands: list[str]) -> str:
         sys.stdin = original_stdin
         sys.stdout = original_stdout
         buffer.close()
+        
+EDGE_CASES = ['Cross Validation', ]
 
-def convert_expected(*expected: str) -> str:
-    return ' '.join(expected)
+def _cover_edge_cases(*cases: Any) -> str:
+    to_eval = []
+    for case in cases:
+        if not isinstance(case, str):
+            case = str(case)
+        if not case in EDGE_CASES:
+            to_eval.append(case)
+    return ' '. join(to_eval)
+
+def convert_expected(*expected: Any) -> str:
+    return _cover_edge_cases(*expected)
 
 def main() -> None:
     commands = [

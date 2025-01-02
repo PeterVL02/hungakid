@@ -3,7 +3,7 @@ import unittest
 from tests.helpers import simulate_cli, convert_expected
 
 expected = {
-    'lowercasewarning' : 'Warning: Command will be converted to lowercase.',
+    'lowercasewarning' : 'Note: Command will be converted to lowercase.',
     'load bad' : 'Error: Project nonexistingproject not found.',
     'create' : 'Project created successfully. temporaryproj is now the current project.',
     'add_data' : 'Dataframe added successfully.',

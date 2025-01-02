@@ -233,7 +233,7 @@ def load_project_from_file(model: Model, alias: str, *args, **kwargs) -> str:
         
     return model.load_project_from_file(alias)
 
-def plot(model: Model, cmd: str, labels: str | list[str], show: bool = False, *args, **kwargs) -> str:
+def plot(model: Model, cmd: str, labels: str | list[str] | None = None, show: bool = False, *args, **kwargs) -> str:
     """
     Generates a plot based on the given command and labels.
 
@@ -246,6 +246,8 @@ def plot(model: Model, cmd: str, labels: str | list[str], show: bool = False, *a
     Returns:
         str: The result of the plot command.
     """
+    if labels is None:
+        labels = []
     if args:
         print(f"Warning: extra arguments {args} will be ignored.")
     elif kwargs:

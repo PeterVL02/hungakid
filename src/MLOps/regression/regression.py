@@ -3,7 +3,7 @@ from sklearn.neural_network import MLPRegressor
 import numpy as np
 from typing import Any
 
-from src.MLOps.regression.reg_utils import generic_regression
+from src.MLOps.utils.ml_utils import generic_ml
 
 
 def linreg(X: np.ndarray, y: np.ndarray, *args, **kwargs
@@ -23,7 +23,7 @@ def linreg(X: np.ndarray, y: np.ndarray, *args, **kwargs
             - Coefficients of the final model.
     """
     
-    predictions, scores, final_model = generic_regression(LinearRegression(), X, y, **kwargs)
+    predictions, scores, final_model = generic_ml(LinearRegression(), X, y, **kwargs)
 
     model_weights: np.ndarray[Any, Any] = final_model.coef_
     
@@ -45,7 +45,7 @@ def mlpreg(X: np.ndarray, y: np.ndarray, *args, **kwargs
             - Intercept of the final model.
             - Coefficients of the final model.
     """
-    predictions, scores, final_model = generic_regression(MLPRegressor(), X, y, *args, **kwargs)
+    predictions, scores, final_model = generic_ml(MLPRegressor(), X, y, *args, **kwargs)
 
     model_weights: np.ndarray = final_model.coefs_
     

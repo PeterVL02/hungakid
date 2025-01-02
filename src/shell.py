@@ -21,7 +21,7 @@ class Shell:
         try:
             command = Command.from_string(cmd)
             result = command.execute(self.model)
-        except (TypeError, ValueError) as e:
+        except (TypeError, ValueError, AssertionError) as e:
             raise e
         return True, result
 
@@ -40,14 +40,18 @@ class Shell:
                     if result.warning:
                         if result.warning.startswith('\n'):
                             result.warning = result.warning[1:]
+                        if result.warning.endswith('\n'):
+                            result.warning = result.warning[:-1]
                         self.display_message(result.warning, c = result.c_warn)
                     if result.result:
                         self.display_message(result.result, c = result.c_message)
                     if result.note:
                         if result.note.startswith('\n'):
                             result.note = result.note[1:]
+                        if result.note.endswith('\n'):
+                            result.note = result.note[:-1]
                         self.display_message(result.note, c = result.c_note)
-            except (ValueError) as e:
+            except (ValueError, AssertionError, TypeError) as e:
                 self.display_message("Error:")
                 self.display_log(e.with_traceback(None))
             

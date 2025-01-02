@@ -8,3 +8,5 @@ src/MLOps/utils/__pycache__
 data/
 projects/
 tests/__pycache__
+src/MLOps/visuals/__pycache__
+src/MLOps/visuals/crud/__pycache__

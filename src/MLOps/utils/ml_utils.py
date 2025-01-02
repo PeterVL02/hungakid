@@ -2,6 +2,10 @@ from sklearn.model_selection import KFold
 import numpy as np
 from pandas import DataFrame, get_dummies, concat
 from pandas.api.types import is_string_dtype
+import numpy as np
+from typing import Any
+from tqdm import tqdm
+from src.MLOps.utils.base import BaseEstimator
 
 def k_fold_cross(X: np.ndarray, y: np.ndarray, shuffle: bool, n_splits: int, random_state: int | None) -> list[tuple[np.ndarray, np.ndarray]]:
     """
@@ -58,3 +62,51 @@ def onehot_encode_string_columns(df: DataFrame, ignore_columns: list[str]) -> Da
     
     return df_encoded
 
+
+
+
+
+def generic_ml(mlmodel: BaseEstimator, X: np.ndarray, y: np.ndarray, *args, **kwargs) -> tuple[np.ndarray, list[float], Any]:
+    """
+    Perform k-fold cross-validation on a given machine learning model and return predictions, scores, and the final trained model.
+    Args:
+        mlmodel (BaseEstimator): The machine learning model to be trained and evaluated.
+        X (np.ndarray): The input features for the model.
+        y (np.ndarray): The target values for the model.
+        *args: Additional positional arguments to pass to the model's __init__ method.
+        **kwargs: Additional keyword arguments to pass to the model's __init__ method and to control cross-validation.
+            n_splits (int, optional): Number of splits for k-fold cross-validation. Default is 10.
+            shuffle (bool, optional): Whether to shuffle the data before splitting into batches. Default is False.
+            random_state (int, optional): Random seed for shuffling. Default is 42 if shuffle is True, otherwise None.
+    Returns:
+        tuple[np.ndarray, list[float], Any]: A tuple containing:
+            - np.ndarray: The predictions made by the model during cross-validation.
+            - list[float]: The scores obtained during cross-validation.
+            - Any: The final trained model.
+    """
+                       
+    
+    
+    predictions: list[float] = []
+    scores: list[float] = []
+    n_splits: int = kwargs.pop('n_splits', 10)
+    shuffle: bool  = kwargs.pop('shuffle', False)
+    random_state: int | None = kwargs.pop('random_state', 42) if shuffle else None
+    for train_index, test_index in tqdm(k_fold_cross(X, y, n_splits=n_splits, 
+                                                     random_state=random_state, 
+                                                     shuffle=shuffle), desc=f'Cross Validating {mlmodel.__class__.__name__}'):
+        X_train, X_test = X[train_index], X[test_index]
+        y_train, y_test = y[train_index], y[test_index]
+        X_train, X_test = standard_pipeline(X_train, X_test)
+        model = mlmodel
+        model.__init__(**kwargs)
+        model.fit(X_train, y_train)
+        predictions.extend(model.predict(X_test))
+        scores.append(float(model.score(X_test, y_test)))
+    
+    final_model = mlmodel
+    final_model.__init__(**kwargs)
+    X, _ = standard_pipeline(X, X)
+    final_model.fit(X, y)
+
+    return np.array(predictions), scores, final_model

@@ -8,6 +8,7 @@ from pandas import DataFrame
 from dataclasses import dataclass, field
 import numpy as np
 import os
+import json
 
 @dataclass
 class ProjectStore(Model):
@@ -16,10 +17,18 @@ class ProjectStore(Model):
 
     @chain
     def create(self, alias: str, type: ProjectType) -> str:
+        with open('config/paths.json', 'r') as f:
+            paths = json.load(f)
+            
+        projects_dir = paths['projects_dir']
+            
         if alias in self.projects:
             raise ValueError(f"Project {alias} already exists.")
         
-        if alias in os.listdir('projects'):
+        if not os.path.exists(projects_dir):
+            os.makedirs(projects_dir)
+        
+        elif alias in os.listdir(projects_dir):
             add_warning(self, f"Warning: Project {alias} already exists in projects directory.")
         
         self.projects[alias] = ShellProject(project_type=type, project_name=alias)
@@ -27,14 +36,16 @@ class ProjectStore(Model):
         return f'Project created successfully. {alias} is now the current project.'
         
     def delete(self, alias: str, from_dir: bool = False) -> str:
-        project_dir = f'projects/{alias}'
+        with open('config/paths.json', 'r') as f:
+            paths = json.load(f)
+        project_dir = paths['projects_dir'] + alias + '/'
         if from_dir:
             if not os.path.exists(project_dir):
                 raise ValueError(f"Project {alias} does not exist in projects directory.")
             os.chdir(project_dir)
             for file in os.listdir():
-                assert file in ['type.txt', 'df.csv', 'modeldata.json', 'X.npy', 'y.npy'], f"Unexpected file {file} in project directory."
-                if file in ['type.txt', 'df.csv', 'modeldata.json', 'X.npy', 'y.npy']:
+                assert file in ['metadata.json', 'df.csv', 'modeldata.json', 'X.npy', 'y.npy'], f"Unexpected file {file} in project directory."
+                if file in ['metadata.json', 'df.csv', 'modeldata.json', 'X.npy', 'y.npy']:
                     os.remove(file)
                 
             os.chdir('..')
@@ -116,10 +127,18 @@ class ProjectStore(Model):
         return self.projects[self.current_project].save(overwrite=overwrite)
     
     def load_project_from_file(self, alias: str) -> str:
-        if os.path.exists(f'projects/{alias}'):
-            with open(f'projects/{alias}/type.txt', 'r') as f:
-                type_ = ProjectType(f.read())
+        with open('config/paths.json', 'r') as f:
+            paths = json.load(f)
+        project_path = paths['projects_dir'] + alias + '/'
+        if os.path.exists(project_path):
+            with open(project_path + 'metadata.json', 'r') as f:
+                metadata = json.load(f)
+            type_ = ProjectType(metadata['type'])
+            is_cleaned = metadata['cleaned']
+            description = metadata['description']
             self.create(alias, type_)
+            self.projects[alias].project_description = description
+            self.projects[alias].is_cleaned = is_cleaned
         else:
             raise ValueError(f"Project {alias} not found.")
         if not self.current_project:
@@ -130,12 +149,14 @@ class ProjectStore(Model):
         if not self.current_project:
             raise ValueError("No current project set.")
         
-        return self.projects[self.current_project].plot(cmd, labels, show)
+        try:
+            return self.projects[self.current_project].plot(cmd, labels, show)
+        except KeyError as e:
+            raise ValueError(f"KeyError: {e}")
     
     def show(self) -> str:
         if not self.current_project:
             raise ValueError("No current project set.")
-        
         return self.projects[self.current_project].show()
     
     def stats(self) -> str:

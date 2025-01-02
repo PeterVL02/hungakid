@@ -75,24 +75,34 @@ class Plotter:
         self.plot_cnt = 0
         self.plot_funcs = []
         self.plot_data = []
+        plt.ioff()
         
-    def plot_interact(self, cmd: str, series: np.ndarray | list[np.ndarray], label: str | list[str], show: bool = False) -> None:
-        if isinstance(label, list):
-            assert len(series) == len(label)
+    def close(self, *args, **kwargs) -> None:
+        """Close the plot."""
+        plt.close()
+        plt.ioff()
+        
+    def plot_interact(self, cmd: str, series: np.ndarray | list[np.ndarray] | None = None, label: str | list[str] | None = None, show: bool = False) -> None:
+        if label is not None and series is not None:
+            if isinstance(label, list):
+                assert len(series) == len(label)
+
         if show:
             PLOTCOMMANDS: dict[str, PlotCommandFn] = {
                 "hist": self.plot_hist,
                 "box": self.plot_boxpl,
-                "scatter": self.plot_scatter
+                "scatter": self.plot_scatter,
+                'close': self.close
             }
         else:
             PLOTCOMMANDS: dict[str, PlotCommandFn] = {
                 "hist":    self._plot_hist_wraps,
                 "box":     self._plot_boxpl_wraps,
-                "scatter": self._plot_scatter_wraps
+                "scatter": self._plot_scatter_wraps,
+                'close':   self.close
             }
+        plt.ion()
         PLOTCOMMANDS[cmd](series, label)
-    
     
 if __name__ == "__main__":
     pltr = Plotter()
@@ -101,3 +111,4 @@ if __name__ == "__main__":
     pltr._plot_scatter_wraps([np.random.randn(100), np.random.randn(100)], ["Random1", "Random1.5"])
     pltr._plot_hist_wraps(np.random.randn(10000), "Random2")
     pltr.show()
+    pltr.close()

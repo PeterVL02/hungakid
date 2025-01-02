@@ -1,6 +1,5 @@
 from src.MLOps.utils.base import BaseEstimator
-from src.MLOps.classification.clas_utils import generic_classification
-from src.MLOps.regression.reg_utils import generic_regression
+from src.MLOps.utils.ml_utils import generic_ml
 from src.cliexception import chain, add_warning, add_note
 
 import numpy as np
@@ -145,7 +144,7 @@ def log_predictions_from_best(*models: BaseEstimator, project: "ShellProject",  
     if type_ == 'classification':
         for model, params in tqdm(data, desc=f"Getting predictions from model"):
             try:
-                preds = generic_classification(model, X, y, **params)[0]
+                preds = generic_ml(model, X, y, **params)[0]
                 project.log_model(model.__class__.__name__, preds, params)
             except RuntimeError as e:
                 add_warning(project, f"Model {model.__class__.__name__} failed. Skipping...")
@@ -153,7 +152,7 @@ def log_predictions_from_best(*models: BaseEstimator, project: "ShellProject",  
     elif type_ == 'regression':
         for model, params in tqdm(data, desc=f"Getting predictions from model"):
             try:
-                preds = generic_regression(model, X, y, **params)[0]
+                preds = generic_ml(model, X, y, **params)[0]
                 project.log_model(model.__class__.__name__, preds, params)
             except RuntimeError as e:
                 add_warning(project, f"Model {model.__class__.__name__} failed. Skipping...")

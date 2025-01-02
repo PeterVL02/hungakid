@@ -27,12 +27,15 @@ class ShellProject:
     modeldata: dict[str, dict[str, float | int | str]] = field(default_factory=dict)
     
     def add_df(self, df_name: str) -> str:
-        for file in os.listdir('data'):
-            os.rename(f'data/{file}', f'data/{file.lower()}')
+        with open('config/paths.json', 'r') as f:
+            paths = json.load(f)
+        data_dir = paths['data_dir']
+        for file in os.listdir(data_dir):
+            os.rename(data_dir + file, data_dir + file.lower())
         
-        if not os.path.exists(f'data/{df_name}.csv'):
+        if not os.path.exists(data_dir + f'{df_name}.csv'):
             raise ValueError(f"Dataframe {df_name} not found.")
-        self.df = read_csv(f'data/{df_name}.csv')
+        self.df = read_csv(data_dir + f'{df_name}.csv')
         for col in self.df.columns:
             if col.lower() == 'id':
                 self.df.drop(col, axis=1, inplace=True)
@@ -106,6 +109,10 @@ class ShellProject:
 
         add_note(self, f'CI: [{CI_lower:.3f}, {CI_upper:.3f}] <==> {score:.3f} +- {(CI_upper - score):.3f}' )
         
+        previous_model = self.modeldata.get(model_name, None)
+        if previous_model and previous_model['score'] >= score: # type: ignore
+                return f"Model {model_name} not logged. Previous model has higher score."
+        
         self.modeldata[model_name] = {
             'score': score,
             'CI_lower': CI_lower,
@@ -139,7 +146,13 @@ class ShellProject:
     
     @chain   
     def save(self, overwrite: bool = False) -> str:
-        project_path = f'projects/{self.project_name}'
+        with open('config/paths.json', 'r') as f:
+            paths = json.load(f)
+        if not os.path.exists(paths['projects_dir']):
+            os.makedirs(paths['projects_dir'])
+            
+        project_path = paths['projects_dir'] + self.project_name + '/'
+        
         if not os.path.exists(project_path):
             os.makedirs(project_path)
         elif not overwrite:
@@ -148,36 +161,46 @@ class ShellProject:
             add_warning(self, f"Warning: Overwriting project {self.project_name}.")
         
         if self.df is not None:
-            self.df.to_csv(f'{project_path}/df.csv', index=False)
+            self.df.to_csv(project_path + f'df.csv', index=False)
         if self.X is not None:
-            np.save(f'{project_path}/X.npy', self.X)
+            np.save(project_path + 'X.npy', self.X)
         if self.y is not None:
-            np.save(f'{project_path}/y.npy', self.y)
+            np.save(project_path + 'y.npy', self.y)
         if self.modeldata:
-            modeldata_path = f'{project_path}/modeldata.json'
+            modeldata_path = project_path + 'modeldata.json'
             with open(modeldata_path, 'w') as f:
                 json.dump(self.modeldata, f, indent=4)
-        with open(f'{project_path}/type.txt', 'w') as f:
-            f.write(self.project_type)
+        type_path = project_path + 'metadata.json'
+        metadata = {
+            'description': self.project_description,
+            'type': self.project_type,
+            'cleaned': self.is_cleaned
+        }
+        with open(type_path, 'w') as f:
+            json.dump(metadata, f, indent=4)
         
         return f"Project {self.project_name} saved successfully."
     
     @chain
     def load_project_from_file(self, alias: str) -> str:
-        project_path = f'projects/{alias}'
+        with open('config/paths.json', 'r') as f:
+            paths = json.load(f)
+            
+        project_path = paths['projects_dir'] + alias + '/'
+
         if not os.path.exists(project_path):
             raise ValueError(f"Project {alias} not found.")
         try:
-            self.df = read_csv(f'{project_path}/df.csv')
+            self.df = read_csv(project_path + 'df.csv')
         except FileNotFoundError:
             add_warning(self, "Warning: Dataframe not found.")
         try:
-            self.X = np.load(f'{project_path}/X.npy', allow_pickle=True)
-            self.y = np.load(f'{project_path}/y.npy', allow_pickle=True)
+            self.X = np.load(project_path + 'X.npy', allow_pickle=True)
+            self.y = np.load(project_path + 'y.npy', allow_pickle=True)
         except FileNotFoundError:
             add_warning(self, "Warning: X and y not found.")
         try:
-            with open(f'{project_path}/modeldata.json', 'r') as f:
+            with open(project_path + 'modeldata.json', 'r') as f:
                 self.modeldata = json.load(f)
         except FileNotFoundError:
             add_warning(self, "Warning: Model data not found.")
@@ -195,7 +218,7 @@ class ShellProject:
             self.plotter.plot_interact(cmd = cmd, series = _series, label = labels, show = show)
         else:
             raise ValueError('Labels must be of type str or list of strings.')
-        return 'Plot created successfully.'
+        return 'Success.'
     
     def show(self) -> str:
         self.plotter.show()
