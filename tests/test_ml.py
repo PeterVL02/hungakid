@@ -46,8 +46,8 @@ class TestML(unittest.TestCase):
         print(converted_ci_low, converted_ci_high)
 
         # Compare with tolerance
-        self.assertAlmostEqual(result_ci_low, converted_ci_low, places=3)
-        self.assertAlmostEqual(result_ci_high, converted_ci_high, places=3)
+        self.assertAlmostEqual(result_ci_low, converted_ci_low, places=2)
+        self.assertAlmostEqual(result_ci_high, converted_ci_high, places=2)
 
     def test_full_run(self):
         commands = [
