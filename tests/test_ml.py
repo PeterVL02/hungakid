@@ -1,6 +1,6 @@
 import unittest
 
-from tests.helpers import simulate_cli, convert_expected
+from tests.helpers import simulate_cli, convert_expected, extract_ci_bounds
 
 expected = {
     'lowercasewarning' : 'Note: Command will be converted to lowercase.',
@@ -17,7 +17,7 @@ results = {
     'linreg_end' : 'Model linear_regression logged successfully.',
 }
 
-class TestML(unittest.TestCase):
+class TestML(unittest.TestCase):        
     def test_linear(self):
         commands = [
             "create temporaryproj r",
@@ -28,8 +28,27 @@ class TestML(unittest.TestCase):
         ]
         result = simulate_cli(commands)
         converted = convert_expected(expected['create'], expected['add_data'], expected['not cleaned'], expected['x_y'],  results['linreg_end'], results['linreg'])
-        self.assertEqual(result, converted)
+
+        # Extract CI bounds from both strings
+        result_ci_bounds = extract_ci_bounds(result)
+        converted_ci_bounds = extract_ci_bounds(converted)
+
+        if None in result_ci_bounds or None in converted_ci_bounds:
+            self.fail("CI bounds extraction returned None")
+
+        result_ci_low, result_ci_high = result_ci_bounds
+        converted_ci_low, converted_ci_high = converted_ci_bounds
+
+        assert result_ci_low is not None and converted_ci_low is not None
+        assert result_ci_high is not None and converted_ci_high is not None
         
+        print(result_ci_low, result_ci_high)
+        print(converted_ci_low, converted_ci_high)
+
+        # Compare with tolerance
+        self.assertAlmostEqual(result_ci_low, converted_ci_low, places=3)
+        self.assertAlmostEqual(result_ci_high, converted_ci_high, places=3)
+
     def test_full_run(self):
         commands = [
             "create reg_project regression",

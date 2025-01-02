@@ -73,6 +73,16 @@ def _cover_edge_cases(*cases: Any) -> str:
 def convert_expected(*expected: Any) -> str:
     return _cover_edge_cases(*expected)
 
+import re
+
+def extract_ci_bounds(result_string: str) -> tuple[float | None, float | None]:
+    # Use regex to extract the CI bounds
+    match = re.search(r"CI: \[(\d+\.\d+), (\d+\.\d+)\]", result_string)
+    if match:
+        return float(match.group(1)), float(match.group(2))
+    return None, None
+
+
 def main() -> None:
     commands = [
             "load NonExistingProject",
