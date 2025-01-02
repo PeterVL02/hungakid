@@ -1,7 +1,15 @@
 import unittest
 import json
+import os
 
 from tests.helpers import simulate_cli, convert_expected
+
+with open('config/paths.json', 'r') as f:
+    paths = json.load(f)
+
+for path in paths.values():
+    if not os.path.exists(path):
+        os.makedirs(path)
 
 class TestConfig(unittest.TestCase):
     def test_show(self):
