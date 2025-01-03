@@ -1,7 +1,8 @@
-import sys
-from io import StringIO
 from src.project_store import ProjectStore
 from src.shell import Shell
+
+import sys
+from io import StringIO
 
 def simulate_cli(commands: list[str]) -> None:
     project_store = ProjectStore()

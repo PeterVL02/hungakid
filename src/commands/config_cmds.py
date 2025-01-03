@@ -1,8 +1,8 @@
+from src.commands.project_store_protocol import Model
+ 
 import json
 import os
 import shutil
-
-from src.commands.project_store_protocol import Model
 
 def config(model: Model, cmd: str, dir: str | None = None, newpath: str | None = None) -> str:
     """

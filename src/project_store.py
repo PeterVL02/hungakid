@@ -2,9 +2,8 @@ from src.commands.project_store_protocol import Model
 from src.shell_project import ShellProject, ProjectType
 from src.commands.command_utils import MlModel
 from src.MLOps.utils.base import BaseEstimator
-from src.cliexception import chain, add_warning, CLIResult, add_note
+from src.cliresult import chain, add_warning, CLIResult
 
-from pandas import DataFrame
 from dataclasses import dataclass, field
 import numpy as np
 import os

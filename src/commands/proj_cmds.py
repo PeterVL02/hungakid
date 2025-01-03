@@ -1,7 +1,6 @@
 from src.commands.project_store_protocol import Model
 from src.commands.command_utils import convert_to_type, convert_to_ml_type
 
-from pandas import DataFrame
 import numpy as np
 
 def create(model: Model, alias: str, type: str, *args, **kwargs) -> str:

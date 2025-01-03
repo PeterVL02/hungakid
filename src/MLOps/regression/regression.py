@@ -1,9 +1,9 @@
+from src.MLOps.utils.ml_utils import generic_ml
+
 from sklearn.linear_model import LinearRegression
 from sklearn.neural_network import MLPRegressor
 import numpy as np
 from typing import Any
-
-from src.MLOps.utils.ml_utils import generic_ml
 
 
 def linreg(X: np.ndarray, y: np.ndarray, *args, **kwargs

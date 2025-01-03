@@ -1,8 +1,8 @@
+from tests.helpers import simulate_cli, convert_expected
+
 import unittest
 import os
 import json
-
-from tests.helpers import simulate_cli, convert_expected
 
 expected = {
     'lowercasewarning' : 'Note: Command will be converted to lowercase.',

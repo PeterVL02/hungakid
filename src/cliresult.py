@@ -1,32 +1,19 @@
-from typing import Callable, Any
+from typing import Callable, Any, Optional
 from functools import wraps
 from colorama import Fore
-
-class CLIException(Exception):
-    """
-    Custom exception class for command line interface errors.
-
-    Args:
-        message (str): The error message.
-    """
-    def __init__(self, message: str):
-        super().__init__(message)
-        self.message = message
-
-    def __str__(self):
-        return f"CliException: {self.message}"
+from dataclasses import dataclass
     
+@dataclass    
 class CLIResult:
     """
     Custom class to return a result and a warning message from a command.
     """
-    def __init__(self, result: str, warning: str | None = None, note: str | None = None,  c_message: str = Fore.WHITE, c_warn: str = Fore.WHITE, c_note: str = Fore.CYAN):
-        self.result = result
-        self.warning = warning
-        self.note = note
-        self.c_message = c_message
-        self.c_warn = c_warn
-        self.c_note = c_note
+    result: Any
+    warning: Optional[str] = None
+    note: Optional[str] = None
+    c_message: str = Fore.WHITE
+    c_warn: str = Fore.WHITE
+    c_note: str = Fore.CYAN
     
 class InplaceModel:
     """

@@ -1,6 +1,6 @@
-import unittest
+from tests.helpers import simulate_cli, extract_ci_bounds
 
-from tests.helpers import simulate_cli, convert_expected, extract_ci_bounds
+import unittest
 
 expected = {
     'lowercasewarning' : 'Note: Command will be converted to lowercase.',

@@ -1,3 +1,5 @@
+from src.MLOps.utils.base import BaseEstimator
+
 from sklearn.model_selection import KFold
 import numpy as np
 from pandas import DataFrame, get_dummies, concat
@@ -5,7 +7,6 @@ from pandas.api.types import is_string_dtype
 import numpy as np
 from typing import Any
 from tqdm import tqdm
-from src.MLOps.utils.base import BaseEstimator
 
 def k_fold_cross(X: np.ndarray, y: np.ndarray, shuffle: bool, n_splits: int, random_state: int | None) -> list[tuple[np.ndarray, np.ndarray]]:
     """

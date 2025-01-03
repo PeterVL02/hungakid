@@ -1,8 +1,8 @@
+from tests.helpers import simulate_cli, convert_expected
+
 import unittest
 import json
 import os
-
-from tests.helpers import simulate_cli, convert_expected
 
 with open('config/paths.json', 'r') as f:
     paths = json.load(f)

@@ -1,3 +1,5 @@
+from src.MLOps.utils.ml_utils import generic_ml
+
 from sklearn.naive_bayes import GaussianNB
 from sklearn.neural_network import MLPClassifier
 from sklearn.linear_model import LogisticRegression
@@ -5,8 +7,6 @@ from sklearn.tree import DecisionTreeClassifier
 from sklearn.ensemble import RandomForestClassifier, GradientBoostingClassifier
 import numpy as np
 from typing import Any
-
-from src.MLOps.utils.ml_utils import generic_ml
 
 
 def naivebayes(X: np.ndarray, y: np.ndarray, *args, **kwargs

@@ -1,4 +1,4 @@
-from src.cliexception import CLIResult
+from src.cliresult import CLIResult
 from src.commands.proj_cmds import (create, set_current_project, 
                                     list_projects, delete, pcp, 
                                     add_data, read_data, make_X_y, 
@@ -13,7 +13,6 @@ from src.commands.config_cmds import config
 
 from typing import Any, Callable
 from pandas import DataFrame
-from colorama import Fore, Style
 
 CommandFn = Callable[..., Any]
 

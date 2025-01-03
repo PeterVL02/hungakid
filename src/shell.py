@@ -1,8 +1,9 @@
 from src.commands.command import Command
 from src.commands.project_store_protocol import Model
-from src.cliexception import CLIResult
+from src.cliresult import CLIResult
 
 from colorama import Fore, Style
+
 class Shell:
     def __init__(self, model: Model) -> None:
         self.model = model

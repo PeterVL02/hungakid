@@ -1,4 +1,4 @@
-from scipy.stats import t, sem, chi2
+from scipy.stats import chi2
 import numpy as np
 
 def mse_confidence_interval(y_true: np.ndarray, y_pred: np.ndarray, p: int, alpha: float = 0.05) -> tuple[float, float, float]:

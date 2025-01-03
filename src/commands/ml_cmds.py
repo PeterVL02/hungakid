@@ -7,7 +7,7 @@ from src.MLOps.classification.classification import (naivebayes as naivebayes_im
 from src.MLOps.tuning import log_predictions_from_best
 from src.commands.command_utils import MlModel
 from src.commands.project_store_protocol import Model
-from src.cliexception import CLIResult, chain
+from src.cliresult import CLIResult, chain
 
 import numpy as np
 
