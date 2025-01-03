@@ -4,7 +4,7 @@ from src.commands.proj_cmds import (create, set_current_project,
                                     add_data, read_data, make_X_y, 
                                     clean_data, summary,
                                     save, load_project_from_file,
-                                    plot, show, stats
+                                    plot, show, stats, list_cols
                                     )
 from src.commands.ml_cmds import (linreg, mlpreg, naivebayes, mlpclas, 
                                   logisticreg, decisiontree, randomforest, 
@@ -42,6 +42,7 @@ COMMANDS: dict[str, CommandFn] = {
     "pcp" : pcp,
     "help" : list_cmds,
     "add_data": add_data,
+    "list_cols": list_cols,
     "read_data": read_data,
     "make_x_y": make_X_y,
     "clean_data": clean_data,

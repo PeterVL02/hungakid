@@ -8,6 +8,7 @@ from dataclasses import dataclass, field
 import numpy as np
 import os
 import json
+from typing import Any, Callable
 
 @dataclass
 class ProjectStore(Model):
@@ -38,6 +39,7 @@ class ProjectStore(Model):
         with open('config/paths.json', 'r') as f:
             paths = json.load(f)
         project_dir = paths['projects_dir'] + alias + '/'
+        original_dir = os.getcwd()
         if from_dir:
             if not os.path.exists(project_dir):
                 raise ValueError(f"Project {alias} does not exist in projects directory.")
@@ -49,7 +51,7 @@ class ProjectStore(Model):
                 
             os.chdir('..')
             os.rmdir(alias)
-            os.chdir('..')
+            os.chdir(original_dir)
             return f"Project {alias} deleted successfully from projects directory."
         
         if alias not in self.projects:
@@ -81,17 +83,23 @@ class ProjectStore(Model):
         
         return self.projects[self.current_project].__str__()
     
-    def add_data(self, df_name: str) -> str:
+    def add_data(self, df_name: str, delimiter: str = ',') -> str:
         if not self.current_project:
             raise ValueError("No current project set.")
         
-        return self.projects[self.current_project].add_df(df_name)
+        return self.projects[self.current_project].add_df(df_name, delimiter=delimiter)
 
     def read_data(self, head: int = 5) -> str:
         if not self.current_project:
             raise ValueError("No current project set.")
         
         return self.projects[self.current_project].read_data(head)
+    
+    def list_cols(self) -> str:
+        if not self.current_project:
+            raise ValueError("No current project set.")
+        
+        return self.projects[self.current_project].list_cols()
     
     def make_X_y(self, target: str) -> str:
         if not self.current_project:

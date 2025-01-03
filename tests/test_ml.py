@@ -6,7 +6,7 @@ expected = {
     'lowercasewarning' : 'Note: Command will be converted to lowercase.',
     'load bad' : 'Error: Project nonexistingproject not found.',
     'create' : 'Project created successfully. temporaryproj is now the current project.',
-    'add_data' : 'Dataframe added successfully.',
+    'add_data' : 'Dataframe iris.csv added successfully.',
     'bad_data' : 'Error: Dataframe nonexistingdata not found.',
     'x_y' : 'X and y created successfully.',
     'not cleaned' : 'Warning: Data not cleaned. Run clean_data to clean data and rerun make_X_y to be safe...',

@@ -6,7 +6,7 @@ from src.MLOps.tuning import log_predictions_from_best
 from src.MLOps.visuals.crud.cruds import Plotter
 from src.cliresult import chain, add_warning, add_note, CLIResult
 
-from pandas import DataFrame, read_csv
+from pandas import DataFrame, read_csv, read_json, read_parquet, read_excel, read_xml, read_html
 from dataclasses import dataclass, field
 import numpy as np
 import os
@@ -26,22 +26,60 @@ class ShellProject:
     
     modeldata: dict[str, dict[str, float | int | str]] = field(default_factory=dict)
     
-    def add_df(self, df_name: str) -> str:
+    def add_df(self, df_name: str, delimiter: str = ',') -> str:
+        """
+        Loads data from a file into a pandas DataFrame.
+        
+        Supported file extensions:
+        - .csv
+        - .txt
+        - .xls, .xlsx
+        - .json
+        - .xml
+        - .html
+        
+        :param df_name: The name of the file to load.
+        :param delimiter: The delimiter to use for CSV and TXT files.
+        """
+        EXTENSIONS = {".csv" : read_csv, 
+                      ".txt" : read_csv, 
+                      ".xls" : read_excel, 
+                      ".xlsx" : read_excel, 
+                      ".json" : read_json, 
+                      ".xml" : read_xml, 
+                      ".html" : read_html
+                      }
+        
         with open('config/paths.json', 'r') as f:
             paths = json.load(f)
         data_dir = paths['data_dir']
         for file in os.listdir(data_dir):
             os.rename(data_dir + file, data_dir + file.lower())
         
-        if not os.path.exists(data_dir + f'{df_name}.csv'):
+        file = None
+        for ext, load_func in EXTENSIONS.items():
+            if os.path.exists(data_dir + f'{df_name}{ext}'):
+                file = data_dir + f'{df_name}{ext}'
+                break
+        else:
             raise ValueError(f"Dataframe {df_name} not found.")
-        self.df = read_csv(data_dir + f'{df_name}.csv')
+        
+
+        if ext in {".csv", ".txt"}:
+            self.df = load_func(file, delimiter=delimiter)
+        else:
+            self.df = load_func(file)
+        
+        if self.df is None:
+            raise ValueError("No dataframe could be loaded.")
+        
         for col in self.df.columns:
             if col.lower() == 'id':
                 self.df.drop(col, axis=1, inplace=True)
             else:
-                self.df.rename(columns={col: col.lower()}, inplace=True)
-        return "Dataframe added successfully."
+                self.df.rename(columns={col: col.lower().strip()}, inplace=True)
+        self.is_cleaned = False
+        return f"Dataframe {file.split('/')[-1]} added successfully."
 
     @chain
     def read_data(self, head: int = 5) -> str:
@@ -50,6 +88,14 @@ class ShellProject:
         if self.df is not None:
             return self.df.head(head).to_string()
         raise ValueError("Project has no dataframe")
+    
+    @chain
+    def list_cols(self) -> str:
+        if not self.is_cleaned:
+            add_warning(self, "Warning: Data not cleaned. Run clean_data to clean data and rerun list_cols to be safe...")
+        if self.df is None:
+            raise ValueError("Project has no dataframe.")
+        return str(self.df.columns.tolist())
 
     @chain 
     def make_X_y(self, target: str) -> str:

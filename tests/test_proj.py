@@ -8,7 +8,7 @@ expected = {
     'lowercasewarning' : 'Note: Command will be converted to lowercase.',
     'load bad' : 'Error: Project nonexistingproject not found.',
     'create' : 'Project created successfully. temporaryproj is now the current project.',
-    'add_data' : 'Dataframe added successfully.',
+    'add_data' : 'Dataframe iris.csv added successfully.',
     'bad_data' : 'Error: Dataframe nonexistingdata not found.',
     'save' : 'Project temporaryproj saved successfully.',
     'clean_data' : 'Data cleaned successfully. Observations dropped: 0',

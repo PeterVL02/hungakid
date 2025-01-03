@@ -37,7 +37,7 @@ def convert_to_type(type_str: str) -> ProjectType:
         type_str = short_type[type_str]
     try:
         return ProjectType[type_str.upper()]
-    except ValueError:
+    except (ValueError, KeyError):
         raise ValueError(f"Invalid project type: {type_str}")
     
 def convert_to_ml_type(type_str: str) -> MlModel:

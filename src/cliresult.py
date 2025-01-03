@@ -33,7 +33,7 @@ def _parse_models(*args: Any) -> tuple[InplaceModel, InplaceModel]:
         model = args[0]
         try:
             project = model.projects[model.current_project]
-        except (AttributeError, IndexError):
+        except (AttributeError, IndexError, KeyError):
             project = InplaceModel()
     except IndexError:
         model = InplaceModel()

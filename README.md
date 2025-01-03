@@ -198,6 +198,20 @@ Below is a list of commands. The commands have obligatory and optional parameter
 
 ### Command (Data)
 ```bash
+>> list_cols
+```
+
+```javascript
+/**
+ * Lists the columns of the dataset of the current project.
+ *
+ * @description
+ * Use this function to list the columns of the dataset. The column names will be displayed in the console.
+ */
+```
+
+### Command (Data)
+```bash
 >> clean_data
 ```
 
