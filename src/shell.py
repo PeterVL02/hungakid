@@ -39,22 +39,14 @@ class Shell:
                         return
                     if result is None: continue
                     if result.warning:
-                        if result.warning.startswith('\n'):
-                            result.warning = result.warning[1:]
-                        if result.warning.endswith('\n'):
-                            result.warning = result.warning[:-1]
-                        self.display_message(result.warning, c = result.c_warn)
+                        self.display_message(result.warning.strip(), c = result.c_warn)
                     if result.result:
                         self.display_message(result.result, c = result.c_message)
                     if result.note:
-                        if result.note.startswith('\n'):
-                            result.note = result.note[1:]
-                        if result.note.endswith('\n'):
-                            result.note = result.note[:-1]
-                        self.display_message(result.note, c = result.c_note)
-            except (ValueError, AssertionError, TypeError) as e:
+                        self.display_message(result.note.strip(), c = result.c_note)
+            except (ValueError, AssertionError, TypeError, AttributeError) as e:
                 self.display_message("Error:")
-                self.display_log(e.with_traceback(None))
+                self.display_log(e)
             
 
     def display_message(self, message: str, c: str = Fore.RED) -> None:

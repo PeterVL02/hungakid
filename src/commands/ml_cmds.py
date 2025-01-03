@@ -4,7 +4,6 @@ from src.MLOps.classification.classification import (naivebayes as naivebayes_im
                                                     decisiontree_impl, randomforest as randomforest_impl, 
                                                     gradientboosting as gradientboosting_impl
                                                         )
-from src.MLOps.tuning import log_predictions_from_best
 from src.commands.command_utils import MlModel
 from src.commands.project_store_protocol import Model
 from src.cliresult import CLIResult, chain
@@ -22,8 +21,11 @@ def retrieve_X_y(model: Model) -> tuple[np.ndarray, np.ndarray]:
     Returns:
         tuple[np.ndarray, np.ndarray]: Feature matrix and target vector.
     """
-    if model.projects[model.current_project].X is None or  model.projects[model.current_project].y is None:
-        raise ValueError("No data to fit model to. Please load data first.")
+    try:
+        if model.projects[model.current_project].X is None or  model.projects[model.current_project].y is None:
+            raise ValueError("No data to fit model to. Please load data first.")
+    except KeyError:
+        raise ValueError("No current project set.")
     return model.projects[model.current_project].X, model.projects[model.current_project].y # type: ignore (sorry mypy, we checked above)
 
 @chain
@@ -183,7 +185,9 @@ def log_from_best(model: Model, *args, **kwargs) -> str | CLIResult:
     from sklearn.ensemble import RandomForestClassifier
     from sklearn.ensemble import GradientBoostingClassifier
 
-    if model.projects[model.current_project].project_type == 'classification':
-        return model.log_predictions_from_best(GaussianNB(), MLPClassifier(), LogisticRegression(), DecisionTreeClassifier(), RandomForestClassifier(), GradientBoostingClassifier(), *args, **kwargs)
-    
+    try:
+        if model.projects[model.current_project].project_type == 'classification':
+            return model.log_predictions_from_best(GaussianNB(), MLPClassifier(), LogisticRegression(), DecisionTreeClassifier(), RandomForestClassifier(), GradientBoostingClassifier(), *args, **kwargs)
+    except KeyError:
+        raise ValueError("No current project set.")
     return model.log_predictions_from_best(LinearRegression(), MLPRegressor(), DecisionTreeRegressor(), RandomForestRegressor(), *args, **kwargs)
