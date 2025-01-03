@@ -111,3 +111,16 @@ def generic_ml(mlmodel: BaseEstimator, X: np.ndarray, y: np.ndarray, *args, **kw
     final_model.fit(X, y)
 
     return np.array(predictions), scores, final_model
+
+def clean_dict(dict_: dict) -> dict:
+    """
+    Clean a dictionary by removing any key-value pairs where the value is None.
+    Args:
+        dict (dict): The dictionary to clean.
+    Returns:
+        dict: The cleaned dictionary.
+    """
+    for key, value in dict_.items():
+        if isinstance(value, np.ndarray):
+            dict_[key] = value.tolist()
+    return dict_

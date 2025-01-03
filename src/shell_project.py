@@ -1,6 +1,6 @@
 from src.MLOps.utils.stat_utils import accuracy_confidence_interval, mse_confidence_interval
 from src.commands.command_utils import MlModel, ProjectType
-from src.MLOps.utils.ml_utils import onehot_encode_string_columns
+from src.MLOps.utils.ml_utils import onehot_encode_string_columns, clean_dict
 from src.MLOps.utils.base import BaseEstimator
 from src.MLOps.tuning import log_predictions_from_best
 from src.MLOps.visuals.crud.cruds import Plotter
@@ -140,7 +140,7 @@ class ShellProject:
         return CLIResult(f"Data cleaned successfully. Observations dropped: {obs_pre - obs_post}")
 
     @chain
-    def log_model(self, model_name: MlModel | str, predictions: np.ndarray, params: dict[str, float | int | str]) -> CLIResult:
+    def log_model(self, model_name: MlModel | str, predictions: np.ndarray, params: dict[str, float | int | str], **kwargs: dict[str, float | int | str]) -> CLIResult:
         if self.X is None or self.y is None:
             raise ValueError("X and y not set. Run make_X_y first.")
         if self.project_type == ProjectType.CLASSIFICATION:
@@ -159,12 +159,13 @@ class ShellProject:
         if previous_model and previous_model['score'] >= score: # type: ignore
                 return CLIResult(f"Model {model_name} not logged. Previous model has higher score.")
         
-        self.modeldata[model_name] = {
+        self.modeldata[model_name] = { # type: ignore
             'score': score,
             'CI_lower': CI_lower,
             'CI_upper': CI_upper,
-            **params
-        }
+            'additionals' : clean_dict(kwargs),
+            'parameters' : clean_dict(params),
+        } 
         return CLIResult(f"Model {model_name} logged successfully.")
     
     def summary(self) -> CLIResult:

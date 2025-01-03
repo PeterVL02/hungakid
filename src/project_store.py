@@ -103,61 +103,6 @@ class ProjectStore(Model):
         
         return CLIResult(self.projects[self.current_project].__str__())
     
-    def add_data(self, df_name: str, delimiter: str = ',') -> CLIResult:
-        if not self.current_project:
-            raise ValueError("No current project set.")
-        
-        return self.projects[self.current_project].add_df(df_name, delimiter=delimiter)
-
-    def read_data(self, head: int = 5) -> CLIResult:
-        if not self.current_project:
-            raise ValueError("No current project set.")
-        
-        return self.projects[self.current_project].read_data(head)
-    
-    def list_cols(self) -> CLIResult:
-        if not self.current_project:
-            raise ValueError("No current project set.")
-        
-        return self.projects[self.current_project].list_cols()
-    
-    def make_X_y(self, target: str) -> CLIResult:
-        if not self.current_project:
-            raise ValueError("No current project set.")
-        
-        return self.projects[self.current_project].make_X_y(target)
-
-    def clean_data(self) -> CLIResult:
-        if not self.current_project:
-            raise ValueError("No current project set.")
-        
-        return self.projects[self.current_project].clean_data()
-
-    @chain
-    def log_model(self, model_name: MlModel, predictions: np.ndarray, params: dict[str, float | int | str], **kwargs) -> CLIResult:
-        if not self.current_project:
-            raise ValueError("No current project set.")
-        
-        return self.projects[self.current_project].log_model(model_name, predictions, params)
-    
-    def summary(self) -> CLIResult:
-        if not self.current_project:
-            raise ValueError("No current project set.")
-        
-        return self.projects[self.current_project].summary()
-    
-    def log_predictions_from_best(self, *models: BaseEstimator, **kwargs) -> CLIResult:
-        if not self.current_project:
-            raise ValueError("No current project set.")
-        
-        return self.projects[self.current_project].log_predictions_from_best(*models, **kwargs)
-    
-    def save(self, overwrite: bool = False) -> CLIResult:
-        if not self.current_project:
-            raise ValueError("No current project set.")
-        
-        return self.projects[self.current_project].save(overwrite=overwrite)
-    
     def load_project_from_file(self, alias: str) -> CLIResult:
         with open('config/paths.json', 'r') as f:
             paths = json.load(f)
@@ -176,23 +121,8 @@ class ProjectStore(Model):
         if not self.current_project:
             raise ValueError("No current project set.")
         return self.projects[self.current_project].load_project_from_file(alias = alias)
-
-    def plot(self, cmd: str, labels: str | list[str], show: bool = False) -> CLIResult:
-        if not self.current_project:
-            raise ValueError("No current project set.")
-        
-        try:
-            return self.projects[self.current_project].plot(cmd, labels, show)
-        except KeyError as e:
-            raise ValueError(f"KeyError: {e}")
     
-    def show(self) -> CLIResult:
+    def get_current_project(self) -> ShellProject:
         if not self.current_project:
             raise ValueError("No current project set.")
-        return self.projects[self.current_project].show()
-    
-    def stats(self) -> CLIResult:
-        if not self.current_project:
-            raise ValueError("No current project set.")
-        
-        return self.projects[self.current_project].stats()
+        return self.projects[self.current_project]

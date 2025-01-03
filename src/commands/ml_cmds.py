@@ -42,7 +42,8 @@ def linreg(model: Model, *args, **kwargs) -> CLIResult:
     X, y = retrieve_X_y(model = model).result
 
     predictions, intercept, weights = linreg_impl(X, y, *args, **kwargs)
-    return model.log_model(MlModel.LINEAR_REGRESSION, predictions = predictions, params = {}, intercept = intercept, weights = weights)
+    project = model.get_current_project()
+    return project.log_model(MlModel.LINEAR_REGRESSION, predictions = predictions, params = {}, intercept = intercept, weights = weights)
 
 @chain
 def mlpreg(model: Model, *args, **kwargs) -> CLIResult:
@@ -58,7 +59,8 @@ def mlpreg(model: Model, *args, **kwargs) -> CLIResult:
     X, y = retrieve_X_y(model = model).result
 
     predictions, intercept, weights = mlpreg_impl(X, y, *args, **kwargs)
-    return model.log_model(MlModel.MLPREG, predictions = predictions, params = {})
+    project = model.get_current_project()
+    return project.log_model(MlModel.MLPREG, predictions = predictions, params = {})
 
 @chain
 def naivebayes(model: Model, *args, **kwargs) -> CLIResult:
@@ -74,7 +76,8 @@ def naivebayes(model: Model, *args, **kwargs) -> CLIResult:
     X, y = retrieve_X_y(model = model).result
 
     predictions, model_priors = naivebayes_impl(X, y, *args, **kwargs)
-    return model.log_model(MlModel.NAIVE_BAYES, predictions = predictions, params = {}, model_priors = model_priors)
+    project = model.get_current_project()
+    return project.log_model(MlModel.NAIVE_BAYES, predictions = predictions, params = {}, model_priors = model_priors)
 
 @chain
 def mlpclas(model: Model, *args, **kwargs) -> CLIResult:
@@ -90,7 +93,8 @@ def mlpclas(model: Model, *args, **kwargs) -> CLIResult:
     X, y = retrieve_X_y(model = model).result
 
     predictions, intercept, weights = mlpclas_impl(X, y, *args, **kwargs)
-    return model.log_model(MlModel.MLPCLASS, predictions = predictions, params = {})
+    project = model.get_current_project()
+    return project.log_model(MlModel.MLPCLASS, predictions = predictions, params = {})
 
 @chain
 def logisticreg(model: Model, *args, **kwargs) -> CLIResult:
@@ -106,7 +110,8 @@ def logisticreg(model: Model, *args, **kwargs) -> CLIResult:
     X, y = retrieve_X_y(model = model).result
 
     predictions, intercept, weights = logisticreg_impl(X, y, *args, **kwargs)
-    return model.log_model(MlModel.LOGISTIC_REGRESSION, predictions = predictions, params = {}, intercept = intercept, weights = weights)
+    project = model.get_current_project()
+    return project.log_model(MlModel.LOGISTIC_REGRESSION, predictions = predictions, params = {}, intercept = intercept, weights = weights)
 
 @chain
 def decisiontree(model: Model, *args, **kwargs) -> CLIResult:
@@ -122,7 +127,8 @@ def decisiontree(model: Model, *args, **kwargs) -> CLIResult:
     X, y = retrieve_X_y(model = model).result
 
     predictions, model_importances, final_model = decisiontree_impl(X, y, *args, **kwargs)
-    return model.log_model(MlModel.DECISION_TREE, predictions = predictions, params = {}, importances = model_importances, final_model = final_model)
+    project = model.get_current_project()
+    return project.log_model(MlModel.DECISION_TREE, predictions = predictions, params = {}, importances = model_importances, final_model = final_model)
 
 @chain
 def randomforest(model: Model, *args, **kwargs) -> CLIResult:
@@ -138,7 +144,8 @@ def randomforest(model: Model, *args, **kwargs) -> CLIResult:
     X, y = retrieve_X_y(model = model).result
 
     predictions, model_importances, final_model = randomforest_impl(X, y, *args, **kwargs)
-    return model.log_model(MlModel.RANDOM_FOREST, predictions = predictions, params = {}, importances = model_importances, final_model = final_model)
+    project = model.get_current_project()
+    return project.log_model(MlModel.RANDOM_FOREST, predictions = predictions, params = {}, importances = model_importances, final_model = final_model)
 
 @chain
 def gradientboosting(model: Model, *args, **kwargs) -> CLIResult:
@@ -154,7 +161,8 @@ def gradientboosting(model: Model, *args, **kwargs) -> CLIResult:
     X, y = retrieve_X_y(model = model).result
 
     predictions, model_importances, final_model = gradientboosting_impl(X, y, *args, **kwargs)
-    return model.log_model(MlModel.GRADIENT_BOOSTING_CLASSIFIER, predictions = predictions, params = {}, importances = model_importances, final_model = final_model)
+    project = model.get_current_project()
+    return project.log_model(MlModel.GRADIENT_BOOSTING_CLASSIFIER, predictions = predictions, params = {}, importances = model_importances, final_model = final_model)
 
 @chain
 def log_from_best(model: Model, *args, **kwargs) -> CLIResult:
@@ -184,10 +192,9 @@ def log_from_best(model: Model, *args, **kwargs) -> CLIResult:
     from sklearn.tree import DecisionTreeClassifier
     from sklearn.ensemble import RandomForestClassifier
     from sklearn.ensemble import GradientBoostingClassifier
-
-    try:
-        if model.projects[model.current_project].project_type == 'classification':
-            return model.log_predictions_from_best(GaussianNB(), MLPClassifier(), LogisticRegression(), DecisionTreeClassifier(), RandomForestClassifier(), GradientBoostingClassifier(), *args, **kwargs)
-    except KeyError:
-        raise ValueError("No current project set.")
-    return model.log_predictions_from_best(LinearRegression(), MLPRegressor(), DecisionTreeRegressor(), RandomForestRegressor(), *args, **kwargs)
+    
+    project = model.get_current_project()
+    
+    if project.project_type == 'classification':
+        return project.log_predictions_from_best(GaussianNB(), MLPClassifier(), LogisticRegression(), DecisionTreeClassifier(), RandomForestClassifier(), GradientBoostingClassifier(), *args, **kwargs)
+    return project.log_predictions_from_best(LinearRegression(), MLPRegressor(), DecisionTreeRegressor(), RandomForestRegressor(), *args, **kwargs)

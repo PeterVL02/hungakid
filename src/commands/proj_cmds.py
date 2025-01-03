@@ -116,7 +116,9 @@ def add_data(model: Model, df_name: str, delimiter: str = ',', *args, **kwargs) 
     elif kwargs:
         add_warning(model, f"Warning: extra arguments {kwargs} will be ignored.")
         
-    return model.add_data(df_name, delimiter = delimiter)
+    project = model.get_current_project()
+        
+    return project.add_df(df_name, delimiter = delimiter)
 
 @chain
 def read_data(model: Model, head: int = 5, *args, **kwargs) -> CLIResult:
@@ -135,7 +137,9 @@ def read_data(model: Model, head: int = 5, *args, **kwargs) -> CLIResult:
     elif kwargs:
         add_warning(model, f"Warning: extra arguments {kwargs} will be ignored.")
         
-    return model.read_data(head)
+    project = model.get_current_project()
+        
+    return project.read_data(head)
 
 @chain
 def list_cols(model: Model, *args, **kwargs) -> CLIResult:
@@ -153,7 +157,9 @@ def list_cols(model: Model, *args, **kwargs) -> CLIResult:
     elif kwargs:
         add_warning(model, f"Warning: extra arguments {kwargs} will be ignored.")
         
-    return model.list_cols()
+    project = model.get_current_project()
+        
+    return project.list_cols()
 
 @chain
 def make_X_y(model: Model, target: str, *args, **kwargs) -> CLIResult:
@@ -172,7 +178,9 @@ def make_X_y(model: Model, target: str, *args, **kwargs) -> CLIResult:
     elif kwargs:
         add_warning(model, f"Warning: extra arguments {kwargs} will be ignored.")
         
-    return model.make_X_y(target)
+    project = model.get_current_project()
+        
+    return project.make_X_y(target)
 
 @chain
 def clean_data(model: Model, *args, **kwargs) -> CLIResult:
@@ -190,7 +198,9 @@ def clean_data(model: Model, *args, **kwargs) -> CLIResult:
     elif kwargs:
         add_warning(model, f"Warning: extra arguments {kwargs} will be ignored.")
         
-    return model.clean_data()
+    project = model.get_current_project()
+    
+    return project.clean_data()
 
 @chain
 def log_model(model: Model, model_name: str, predictions: np.ndarray, params: dict[str, float | int | str], *args, **kwargs) -> CLIResult:
@@ -212,7 +222,10 @@ def log_model(model: Model, model_name: str, predictions: np.ndarray, params: di
         add_warning(model, f"Warning: extra arguments {kwargs} will be ignored.")
         
     model_name = convert_to_ml_type(model_name)
-    return model.log_model(model_name, predictions, params)
+    
+    project = model.get_current_project()
+    
+    return project.log_model(model_name, predictions, params)
 
 @chain
 def summary(model: Model, *args, **kwargs) -> CLIResult:
@@ -230,7 +243,9 @@ def summary(model: Model, *args, **kwargs) -> CLIResult:
     elif kwargs:
         add_warning(model, f"Warning: extra arguments {kwargs} will be ignored.")
         
-    return model.summary()
+    project = model.get_current_project()
+        
+    return project.summary()
 
 @chain
 def save(model: Model, overwrite: bool = False, *args, **kwargs) -> CLIResult:
@@ -248,8 +263,10 @@ def save(model: Model, overwrite: bool = False, *args, **kwargs) -> CLIResult:
         add_warning(model, f"Warning: extra arguments {args} will be ignored.")
     elif kwargs:
         add_warning(model, f"Warning: extra arguments {kwargs} will be ignored.")
+        
+    project = model.get_current_project()
     
-    return model.save(overwrite=overwrite)
+    return project.save(overwrite=overwrite)
 
 @chain
 def load_project_from_file(model: Model, alias: str, *args, **kwargs) -> CLIResult:
@@ -291,7 +308,9 @@ def plot(model: Model, cmd: str, labels: str | list[str] | None = None, show: bo
     elif kwargs:
         add_warning(model, f"Warning: extra arguments {kwargs} will be ignored.")
         
-    return model.plot(cmd, labels, show)
+    project = model.get_current_project()
+        
+    return project.plot(cmd, labels, show)
 
 @chain
 def show(model: Model, *args, **kwargs) -> CLIResult:
@@ -309,7 +328,9 @@ def show(model: Model, *args, **kwargs) -> CLIResult:
     elif kwargs:
         add_warning(model, f"Warning: extra arguments {kwargs} will be ignored.")
         
-    return model.show()
+    project = model.get_current_project()
+        
+    return project.show()
 
 @chain
 def stats(model: Model, *args, **kwargs) -> CLIResult:
@@ -327,4 +348,6 @@ def stats(model: Model, *args, **kwargs) -> CLIResult:
     elif kwargs:
         add_warning(model, f"Warning: extra arguments {kwargs} will be ignored.")
         
-    return model.stats()
+    project = model.get_current_project()
+        
+    return project.stats()
