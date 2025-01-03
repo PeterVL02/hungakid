@@ -86,6 +86,9 @@ class Plotter:
         if label is not None and series is not None:
             if isinstance(label, list):
                 assert len(series) == len(label)
+                
+        if cmd != 'show':
+            assert bool(label), f"Label must be provided for cmd {cmd}."
 
         if show:
             PLOTCOMMANDS: dict[str, PlotCommandFn] = {

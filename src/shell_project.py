@@ -26,7 +26,7 @@ class ShellProject:
     
     modeldata: dict[str, dict[str, float | int | str]] = field(default_factory=dict)
     
-    def add_df(self, df_name: str, delimiter: str = ',') -> str:
+    def add_df(self, df_name: str, delimiter: str = ',') -> CLIResult:
         """
         Loads data from a file into a pandas DataFrame.
         
@@ -79,26 +79,26 @@ class ShellProject:
             else:
                 self.df.rename(columns={col: col.lower().strip()}, inplace=True)
         self.is_cleaned = False
-        return f"Dataframe {file.split('/')[-1]} added successfully."
+        return CLIResult(f"Dataframe {file.split('/')[-1]} added successfully.")
 
     @chain
-    def read_data(self, head: int = 5) -> str:
+    def read_data(self, head: int = 5) -> CLIResult:
         if not self.is_cleaned:
             add_warning(self, "Warning: Data not cleaned. Run clean_data to clean data and rerun read_data to be safe...")
         if self.df is not None:
-            return self.df.head(head).to_string()
+            return CLIResult(self.df.head(head).to_string())
         raise ValueError("Project has no dataframe")
     
     @chain
-    def list_cols(self) -> str:
+    def list_cols(self) -> CLIResult:
         if not self.is_cleaned:
             add_warning(self, "Warning: Data not cleaned. Run clean_data to clean data and rerun list_cols to be safe...")
         if self.df is None:
             raise ValueError("Project has no dataframe.")
-        return str(self.df.columns.tolist())
+        return CLIResult(str(self.df.columns.tolist()))
 
     @chain 
-    def make_X_y(self, target: str) -> str:
+    def make_X_y(self, target: str) -> CLIResult:
         if not self.is_cleaned:
             add_warning(self, "Warning: Data not cleaned. Run clean_data to clean data and rerun make_X_y to be safe...")
         if self.df is None:
@@ -128,19 +128,19 @@ class ShellProject:
 
         self.X = self.df.drop(target, axis=1).values.astype(float)
         
-        return "X and y created successfully."
+        return CLIResult("X and y created successfully.")
 
-    def clean_data(self) -> str:
+    def clean_data(self) -> CLIResult:
         if self.df is None:
             raise ValueError("Project has no dataframe.")
         obs_pre = len(self.df)
         self.df.dropna(inplace=True)
         self.is_cleaned = True
         obs_post = len(self.df)
-        return f"Data cleaned successfully. Observations dropped: {obs_pre - obs_post}"
+        return CLIResult(f"Data cleaned successfully. Observations dropped: {obs_pre - obs_post}")
 
     @chain
-    def log_model(self, model_name: MlModel | str, predictions: np.ndarray, params: dict[str, float | int | str]) -> str | CLIResult:
+    def log_model(self, model_name: MlModel | str, predictions: np.ndarray, params: dict[str, float | int | str]) -> CLIResult:
         if self.X is None or self.y is None:
             raise ValueError("X and y not set. Run make_X_y first.")
         if self.project_type == ProjectType.CLASSIFICATION:
@@ -157,7 +157,7 @@ class ShellProject:
         
         previous_model = self.modeldata.get(model_name, None)
         if previous_model and previous_model['score'] >= score: # type: ignore
-                return f"Model {model_name} not logged. Previous model has higher score."
+                return CLIResult(f"Model {model_name} not logged. Previous model has higher score.")
         
         self.modeldata[model_name] = {
             'score': score,
@@ -165,11 +165,11 @@ class ShellProject:
             'CI_upper': CI_upper,
             **params
         }
-        return f"Model {model_name} logged successfully."
+        return CLIResult(f"Model {model_name} logged successfully.")
     
-    def summary(self) -> str:
+    def summary(self) -> CLIResult:
         if not self.modeldata:
-            return "No models logged yet."
+            return CLIResult("No models logged yet.")
         
         summary_str = "Model Summary:\n"
         sorted_models = sorted(self.modeldata.items(), key=lambda item: item[1]['score'], reverse=False)
@@ -180,18 +180,18 @@ class ShellProject:
                 summary_str += f"  {key}: {value}\n"
             summary_str += "\n"
         
-        return summary_str[:-2]
+        return CLIResult(summary_str[:-2])
     
     @chain
-    def log_predictions_from_best(self, *models: BaseEstimator, cv: int = 10, n_values: int = 3) -> str | CLIResult:
+    def log_predictions_from_best(self, *models: BaseEstimator, cv: int = 10, n_values: int = 3) -> CLIResult:
         if self.X is None or self.y is None:
             raise ValueError("X and y not set. Run make_X_y first.")
         if not models:
             raise ValueError("No models provided.")
-        return log_predictions_from_best(*models, project=self, cv=cv, n_values=n_values)
+        return CLIResult(log_predictions_from_best(*models, project=self, cv=cv, n_values=n_values))
     
     @chain   
-    def save(self, overwrite: bool = False) -> str:
+    def save(self, overwrite: bool = False) -> CLIResult:
         with open('config/paths.json', 'r') as f:
             paths = json.load(f)
         if not os.path.exists(paths['projects_dir']):
@@ -225,10 +225,10 @@ class ShellProject:
         with open(type_path, 'w') as f:
             json.dump(metadata, f, indent=4)
         
-        return f"Project {self.project_name} saved successfully."
+        return CLIResult(f"Project {self.project_name} saved successfully.")
     
     @chain
-    def load_project_from_file(self, alias: str) -> str:
+    def load_project_from_file(self, alias: str) -> CLIResult:
         with open('config/paths.json', 'r') as f:
             paths = json.load(f)
             
@@ -250,9 +250,9 @@ class ShellProject:
                 self.modeldata = json.load(f)
         except FileNotFoundError:
             add_warning(self, "Warning: Model data not found.")
-        return f"Project {alias} loaded successfully."
+        return CLIResult(f"Project {alias} loaded successfully.")
     
-    def plot(self, cmd: str, labels: str | list[str], show: bool = False) -> str:
+    def plot(self, cmd: str, labels: str | list[str], show: bool = False) -> CLIResult:
         if self.df is None:
             raise ValueError("Project has no dataframe.")
         if isinstance(labels, str):
@@ -264,16 +264,16 @@ class ShellProject:
             self.plotter.plot_interact(cmd = cmd, series = _series, label = labels, show = show)
         else:
             raise ValueError('Labels must be of type str or list of strings.')
-        return 'Success.'
+        return CLIResult('Success.')
     
-    def show(self) -> str:
+    def show(self) -> CLIResult:
         self.plotter.show()
-        return 'Plots shown successfully.'
+        return CLIResult('Plots shown successfully.')
     
-    def stats(self) -> str:
+    def stats(self) -> CLIResult:
         if self.df is None:
             raise ValueError("Project has no dataframe.")
-        return self.df.describe().to_string()
+        return CLIResult(self.df.describe().to_string())
         
     def __str__(self) -> str:
         return f"Project: {self.project_name}, Type: {self.project_type}"

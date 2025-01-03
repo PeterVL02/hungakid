@@ -1,11 +1,12 @@
 from src.commands.project_store_protocol import Model
 from src.commands.command_utils import convert_to_type, convert_to_ml_type
 from src.cliresult import chain, add_warning
+from src.cliresult import CLIResult
 
 import numpy as np
 
 @chain
-def create(model: Model, alias: str, type: str, *args, **kwargs) -> str:
+def create(model: Model, alias: str, type: str, *args, **kwargs) -> CLIResult:
     """Creates a new project with the given alias and type.
 
     Args:
@@ -14,7 +15,7 @@ def create(model: Model, alias: str, type: str, *args, **kwargs) -> str:
         type (str): Type of project. Must be one of 'regression', 'classification', or 'clustering'.
 
     Returns:
-        str: Optional message to display to the user.
+        CLIResult: Optional message to display to the user.
     """
     if args:
         add_warning(model, f"Warning: extra arguments {args} will be ignored.")
@@ -25,7 +26,7 @@ def create(model: Model, alias: str, type: str, *args, **kwargs) -> str:
     return model.create(alias, new_type)
 
 @chain
-def delete(model: Model, alias: str, from_dir: bool = False, *args, **kwargs) -> str:
+def delete(model: Model, alias: str, from_dir: bool = False, *args, **kwargs) -> CLIResult:
     """
     Deletes the project with the given alias.
 
@@ -34,7 +35,7 @@ def delete(model: Model, alias: str, from_dir: bool = False, *args, **kwargs) ->
         alias (str): Alias of the project to delete.
 
     Returns:
-        str: Optional message to display to the user.
+        CLIResult: Optional message to display to the user.
     """
     if args:
         add_warning(model, f"Warning: extra arguments {args} will be ignored.")
@@ -44,7 +45,7 @@ def delete(model: Model, alias: str, from_dir: bool = False, *args, **kwargs) ->
     return model.delete(alias, from_dir = from_dir)
 
 @chain
-def list_projects(model: Model, *args, **kwargs) -> str:
+def list_projects(model: Model, *args, **kwargs) -> CLIResult:
     """
     Lists all projects in the model.
 
@@ -52,7 +53,7 @@ def list_projects(model: Model, *args, **kwargs) -> str:
         model (Model): Parsed automatically by the command parser.
 
     Returns:
-        list[str]: A list of project aliases.
+        CLIResult: A list of project aliases.
     """
     if args:
         add_warning(model, f"Warning: extra arguments {args} will be ignored.")
@@ -62,7 +63,7 @@ def list_projects(model: Model, *args, **kwargs) -> str:
     return model.list_projects()
 
 @chain
-def set_current_project(model: Model, alias: str, *args, **kwargs) -> str:
+def set_current_project(model: Model, alias: str, *args, **kwargs) -> CLIResult:
     """
     Sets the current project to the one with the given alias.
 
@@ -71,7 +72,7 @@ def set_current_project(model: Model, alias: str, *args, **kwargs) -> str:
         alias (str): Alias of the project to set as current.
 
     Returns:
-        str: Optional message to display to the user.
+        CLIResult: Optional message to display to the user.
     """
     if args:
         add_warning(model, f"Warning: extra arguments {args} will be ignored.")
@@ -80,7 +81,7 @@ def set_current_project(model: Model, alias: str, *args, **kwargs) -> str:
         
     return model.set_current_project(alias)
 
-def pcp(model: Model) -> str:
+def pcp(model: Model) -> CLIResult:
     """
     Retrieves the current project.
 
@@ -88,12 +89,12 @@ def pcp(model: Model) -> str:
         model (Model): Parsed automatically by the command parser.
 
     Returns:
-        str: The current project or an error message if no project is set.
+        CLIResult: The current project or an error message if no project is set.
     """
     return model.pcp()
 
 @chain
-def add_data(model: Model, df_name: str, delimiter: str = ',', *args, **kwargs) -> str:
+def add_data(model: Model, df_name: str, delimiter: str = ',', *args, **kwargs) -> CLIResult:
     """
     Adds a DataFrame to the current project.
     
@@ -118,7 +119,7 @@ def add_data(model: Model, df_name: str, delimiter: str = ',', *args, **kwargs) 
     return model.add_data(df_name, delimiter = delimiter)
 
 @chain
-def read_data(model: Model, head: int = 5, *args, **kwargs) -> str:
+def read_data(model: Model, head: int = 5, *args, **kwargs) -> CLIResult:
     """
     Reads the data from the current project.
 
@@ -127,7 +128,7 @@ def read_data(model: Model, head: int = 5, *args, **kwargs) -> str:
         head (int): Number of rows to display.
 
     Returns:
-        str: A string representation of the DataFrame.
+        CLIResult: A string representation of the DataFrame.
     """
     if args:
         add_warning(model, f"Warning: extra arguments {args} will be ignored.")
@@ -137,7 +138,7 @@ def read_data(model: Model, head: int = 5, *args, **kwargs) -> str:
     return model.read_data(head)
 
 @chain
-def list_cols(model: Model, *args, **kwargs) -> str:
+def list_cols(model: Model, *args, **kwargs) -> CLIResult:
     """
     Lists the columns of dataframe in the current project.
 
@@ -145,7 +146,7 @@ def list_cols(model: Model, *args, **kwargs) -> str:
         model (Model): Parsed automatically by the command parser.
 
     Returns:
-        str: A list of columns in the current project.
+        CLIResult: A list of columns in the current project.
     """
     if args:
         add_warning(model, f"Warning: extra arguments {args} will be ignored.")
@@ -155,7 +156,7 @@ def list_cols(model: Model, *args, **kwargs) -> str:
     return model.list_cols()
 
 @chain
-def make_X_y(model: Model, target: str, *args, **kwargs) -> str:
+def make_X_y(model: Model, target: str, *args, **kwargs) -> CLIResult:
     """
     Creates the X and y arrays from the current project.
 
@@ -164,7 +165,7 @@ def make_X_y(model: Model, target: str, *args, **kwargs) -> str:
         target (str): Name of the target column.
 
     Returns:
-        str: Optional message to display to the user.
+        CLIResult: Optional message to display to the user.
     """
     if args:
         add_warning(model, f"Warning: extra arguments {args} will be ignored.")
@@ -174,7 +175,7 @@ def make_X_y(model: Model, target: str, *args, **kwargs) -> str:
     return model.make_X_y(target)
 
 @chain
-def clean_data(model: Model, *args, **kwargs) -> str:
+def clean_data(model: Model, *args, **kwargs) -> CLIResult:
     """
     Cleans the data in the current project.
 
@@ -182,7 +183,7 @@ def clean_data(model: Model, *args, **kwargs) -> str:
         model (Model): Parsed automatically by the command parser.
 
     Returns:
-        str: Optional message to display to the user.
+        CLIResult: Optional message to display to the user.
     """
     if args:
         add_warning(model, f"Warning: extra arguments {args} will be ignored.")
@@ -192,7 +193,7 @@ def clean_data(model: Model, *args, **kwargs) -> str:
     return model.clean_data()
 
 @chain
-def log_model(model: Model, model_name: str, predictions: np.ndarray, params: dict[str, float | int | str], *args, **kwargs) -> str:
+def log_model(model: Model, model_name: str, predictions: np.ndarray, params: dict[str, float | int | str], *args, **kwargs) -> CLIResult:
     """
     Logs a model in the current project.
 
@@ -203,7 +204,7 @@ def log_model(model: Model, model_name: str, predictions: np.ndarray, params: di
         params (dict[str, float]): Parameters of the model.
 
     Returns:
-        str: Optional message to display to the user.
+        CLIResult: Optional message to display to the user.
     """
     if args:
         add_warning(model, f"Warning: extra arguments {args} will be ignored.")
@@ -214,7 +215,7 @@ def log_model(model: Model, model_name: str, predictions: np.ndarray, params: di
     return model.log_model(model_name, predictions, params)
 
 @chain
-def summary(model: Model, *args, **kwargs) -> str:
+def summary(model: Model, *args, **kwargs) -> CLIResult:
     """
     Summarizes the current project.
 
@@ -222,7 +223,7 @@ def summary(model: Model, *args, **kwargs) -> str:
         model (Model): Parsed automatically by the command parser.
 
     Returns:
-        str: A summary of the current project.
+        CLIResult: A summary of the current project.
     """
     if args:
         add_warning(model, f"Warning: extra arguments {args} will be ignored.")
@@ -232,7 +233,7 @@ def summary(model: Model, *args, **kwargs) -> str:
     return model.summary()
 
 @chain
-def save(model: Model, overwrite: bool = False, *args, **kwargs) -> str:
+def save(model: Model, overwrite: bool = False, *args, **kwargs) -> CLIResult:
     """
     Saves the current project.
 
@@ -241,7 +242,7 @@ def save(model: Model, overwrite: bool = False, *args, **kwargs) -> str:
         overwrite (bool): Whether to overwrite the existing file if it exists.
 
     Returns:
-        str: Optional message to display to the user.
+        CLIResult: Optional message to display to the user.
     """
     if args:
         add_warning(model, f"Warning: extra arguments {args} will be ignored.")
@@ -251,7 +252,7 @@ def save(model: Model, overwrite: bool = False, *args, **kwargs) -> str:
     return model.save(overwrite=overwrite)
 
 @chain
-def load_project_from_file(model: Model, alias: str, *args, **kwargs) -> str:
+def load_project_from_file(model: Model, alias: str, *args, **kwargs) -> CLIResult:
     """
     Loads a project from a file.
 
@@ -260,7 +261,7 @@ def load_project_from_file(model: Model, alias: str, *args, **kwargs) -> str:
         alias (str): Alias of the project to load.
 
     Returns:
-        str: Optional message to display to the user.
+        CLIResult: Optional message to display to the user.
     """        
     if args:
         add_warning(model, f"Warning: extra arguments {args} will be ignored.")
@@ -270,7 +271,7 @@ def load_project_from_file(model: Model, alias: str, *args, **kwargs) -> str:
     return model.load_project_from_file(alias)
 
 @chain
-def plot(model: Model, cmd: str, labels: str | list[str] | None = None, show: bool = False, *args, **kwargs) -> str:
+def plot(model: Model, cmd: str, labels: str | list[str] | None = None, show: bool = False, *args, **kwargs) -> CLIResult:
     """
     Generates a plot based on the given command and labels.
 
@@ -281,7 +282,7 @@ def plot(model: Model, cmd: str, labels: str | list[str] | None = None, show: bo
         show (bool, optional): Whether to display the plot. Defaults to False.
 
     Returns:
-        str: The result of the plot command.
+        CLIResult: The result of the plot command.
     """
     if labels is None:
         labels = []
@@ -293,7 +294,7 @@ def plot(model: Model, cmd: str, labels: str | list[str] | None = None, show: bo
     return model.plot(cmd, labels, show)
 
 @chain
-def show(model: Model, *args, **kwargs) -> str:
+def show(model: Model, *args, **kwargs) -> CLIResult:
     """
     Displays the plot for the current project.
 
@@ -301,7 +302,7 @@ def show(model: Model, *args, **kwargs) -> str:
         model (Model): The model containing the project data. Parsed automatically.
 
     Returns:
-        str: The result of the show command.
+        CLIResult: The result of the show command.
     """
     if args:
         add_warning(model, f"Warning: extra arguments {args} will be ignored.")
@@ -311,7 +312,7 @@ def show(model: Model, *args, **kwargs) -> str:
     return model.show()
 
 @chain
-def stats(model: Model, *args, **kwargs) -> str:
+def stats(model: Model, *args, **kwargs) -> CLIResult:
     """
     Displays the statistics for the current project.
 
@@ -319,7 +320,7 @@ def stats(model: Model, *args, **kwargs) -> str:
         model (Model): The model containing the project data. Parsed automatically.
 
     Returns:
-        str: The result of the stats command.
+        CLIResult: The result of the stats command.
     """
     if args:
         add_warning(model, f"Warning: extra arguments {args} will be ignored.")

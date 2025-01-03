@@ -16,7 +16,17 @@ class ProjectStore(Model):
     current_project: str | None  = None
 
     @chain
-    def create(self, alias: str, type: ProjectType) -> str:
+    def create(self, alias: str, type: ProjectType) -> CLIResult:
+        """
+        Create a new project with the given alias and type.
+        
+        Args:
+            alias (str): The alias for the project.
+            type (ProjectType): The type of the project.
+            
+        Returns:
+            CLIResult: Result of the operation.
+        """
         with open('config/paths.json', 'r') as f:
             paths = json.load(f)
             
@@ -33,9 +43,19 @@ class ProjectStore(Model):
         
         self.projects[alias] = ShellProject(project_type=type, project_name=alias)
         self.set_current_project(alias)
-        return f'Project created successfully. {alias} is now the current project.'
+        return CLIResult(f'Project created successfully. {alias} is now the current project.')
         
-    def delete(self, alias: str, from_dir: bool = False) -> str:
+    def delete(self, alias: str, from_dir: bool = False) -> CLIResult:
+        """
+        Delete a project with the given alias.
+        
+        Args:
+            alias (str): The alias of the project to delete.
+            from_dir (bool): Whether to delete the project directory as well.
+            
+        Returns:
+            CLIResult: Result of the operation.
+        """
         with open('config/paths.json', 'r') as f:
             paths = json.load(f)
         project_dir = paths['projects_dir'] + alias + '/'
@@ -52,7 +72,7 @@ class ProjectStore(Model):
             os.chdir('..')
             os.rmdir(alias)
             os.chdir(original_dir)
-            return f"Project {alias} deleted successfully from projects directory."
+            return CLIResult(f"Project {alias} deleted successfully from projects directory.")
         
         if alias not in self.projects:
             raise ValueError(f"Project {alias} does not exist.")
@@ -60,85 +80,85 @@ class ProjectStore(Model):
         del self.projects[alias]
         if self.current_project == alias:
             self.current_project = None
-        return f"Project {alias} deleted successfully. Current project is {self.current_project}."
+        return CLIResult(f"Project {alias} deleted successfully. Current project is {self.current_project}.")
 
-    def list_projects(self) -> str:
+    def list_projects(self) -> CLIResult:
         in_use = str(list(self.projects.keys()))
         with open('config/paths.json', 'r') as f:
             paths = json.load(f)
         projects_dir = paths['projects_dir']
         saved_projects = os.listdir(projects_dir)
-        return f"Projects in use: {in_use}\nProjects saved in projects directory: {str(saved_projects)}"
+        return CLIResult(f"Projects in use: {in_use}\nProjects saved in projects directory: {str(saved_projects)}")
     
-    def set_current_project(self, alias: str) -> str:
+    def set_current_project(self, alias: str) -> CLIResult:
         if alias not in self.projects:
             raise ValueError(f"Project {alias} does not exist.")
         
         self.current_project = alias
-        return f"Current project set to {alias}."
+        return CLIResult(f"Current project set to {alias}.")
 
-    def pcp(self) -> str:
+    def pcp(self) -> CLIResult:
         if not self.current_project:
-            return "No current project set."
+            return CLIResult("No current project set.")
         
-        return self.projects[self.current_project].__str__()
+        return CLIResult(self.projects[self.current_project].__str__())
     
-    def add_data(self, df_name: str, delimiter: str = ',') -> str:
+    def add_data(self, df_name: str, delimiter: str = ',') -> CLIResult:
         if not self.current_project:
             raise ValueError("No current project set.")
         
         return self.projects[self.current_project].add_df(df_name, delimiter=delimiter)
 
-    def read_data(self, head: int = 5) -> str:
+    def read_data(self, head: int = 5) -> CLIResult:
         if not self.current_project:
             raise ValueError("No current project set.")
         
         return self.projects[self.current_project].read_data(head)
     
-    def list_cols(self) -> str:
+    def list_cols(self) -> CLIResult:
         if not self.current_project:
             raise ValueError("No current project set.")
         
         return self.projects[self.current_project].list_cols()
     
-    def make_X_y(self, target: str) -> str:
+    def make_X_y(self, target: str) -> CLIResult:
         if not self.current_project:
             raise ValueError("No current project set.")
         
         return self.projects[self.current_project].make_X_y(target)
 
-    def clean_data(self) -> str:
+    def clean_data(self) -> CLIResult:
         if not self.current_project:
             raise ValueError("No current project set.")
         
         return self.projects[self.current_project].clean_data()
 
     @chain
-    def log_model(self, model_name: MlModel, predictions: np.ndarray, params: dict[str, float | int | str], **kwargs) -> str | CLIResult:
+    def log_model(self, model_name: MlModel, predictions: np.ndarray, params: dict[str, float | int | str], **kwargs) -> CLIResult:
         if not self.current_project:
             raise ValueError("No current project set.")
         
         return self.projects[self.current_project].log_model(model_name, predictions, params)
     
-    def summary(self) -> str:
+    def summary(self) -> CLIResult:
         if not self.current_project:
             raise ValueError("No current project set.")
         
         return self.projects[self.current_project].summary()
     
-    def log_predictions_from_best(self, *models: BaseEstimator, **kwargs) -> str | CLIResult:
+    def log_predictions_from_best(self, *models: BaseEstimator, **kwargs) -> CLIResult:
         if not self.current_project:
             raise ValueError("No current project set.")
         
         return self.projects[self.current_project].log_predictions_from_best(*models, **kwargs)
     
-    def save(self, overwrite: bool = False) -> str:
+    def save(self, overwrite: bool = False) -> CLIResult:
         if not self.current_project:
             raise ValueError("No current project set.")
         
         return self.projects[self.current_project].save(overwrite=overwrite)
     
-    def load_project_from_file(self, alias: str) -> str:
+    def load_project_from_file(self, alias: str) -> CLIResult:
         with open('config/paths.json', 'r') as f:
             paths = json.load(f)
         project_path = paths['projects_dir'] + alias + '/'
@@ -157,7 +177,7 @@ class ProjectStore(Model):
             raise ValueError("No current project set.")
         return self.projects[self.current_project].load_project_from_file(alias = alias)
 
-    def plot(self, cmd: str, labels: str | list[str], show: bool = False) -> str:
+    def plot(self, cmd: str, labels: str | list[str], show: bool = False) -> CLIResult:
         if not self.current_project:
             raise ValueError("No current project set.")
         
@@ -166,12 +186,12 @@ class ProjectStore(Model):
         except KeyError as e:
             raise ValueError(f"KeyError: {e}")
     
-    def show(self) -> str:
+    def show(self) -> CLIResult:
         if not self.current_project:
             raise ValueError("No current project set.")
         return self.projects[self.current_project].show()
     
-    def stats(self) -> str:
+    def stats(self) -> CLIResult:
         if not self.current_project:
             raise ValueError("No current project set.")
         
