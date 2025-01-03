@@ -122,3 +122,7 @@ class TestML(unittest.TestCase):
             "exit",
          ]
         result = simulate_cli(commands)
+
+    def test_full_run_2(self):
+        commands = ["create test c; add_data iris; make_x_y species; log_best -n_values 1; exit"]
+        result = simulate_cli(commands)

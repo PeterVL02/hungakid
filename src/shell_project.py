@@ -189,7 +189,7 @@ class ShellProject:
             raise ValueError("X and y not set. Run make_X_y first.")
         if not models:
             raise ValueError("No models provided.")
-        return CLIResult(log_predictions_from_best(*models, project=self, cv=cv, n_values=n_values))
+        return log_predictions_from_best(*models, project=self, cv=cv, n_values=n_values)
     
     @chain   
     def save(self, overwrite: bool = False) -> CLIResult:

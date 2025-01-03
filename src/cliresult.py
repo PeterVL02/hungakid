@@ -81,7 +81,6 @@ def chain(func: Callable) -> Callable:
         if isinstance(funcres, CLIResult):
             RESULT = funcres
         else:
-            print('DEBUG NOT CLIRESULT')
             RESULT = CLIResult(result = funcres, 
                                warning = '', 
                                note = '', 
@@ -105,7 +104,7 @@ def chain(func: Callable) -> Callable:
             RESULT.warning = _remove_duplicates(RESULT.warning)
         if RESULT.note:
             RESULT.note = _remove_duplicates(RESULT.note)
-            
+        
         return RESULT
     return wrapper
 
