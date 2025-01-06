@@ -257,8 +257,11 @@ class ShellProject:
         if self.df is None:
             raise ValueError("Project has no dataframe.")
         if isinstance(labels, str):
+            assert labels in self.df.columns, f"Column {labels} not in dataframe. Columns are {self.df.columns.tolist()}."
             self.plotter.plot_interact(cmd = cmd, series = np.array(self.df[labels].values), label = labels, show = show)
         elif isinstance(labels, list):
+            assert all(isinstance(label, str) for label in labels), "Labels must be of type str."
+            assert all(label in self.df.columns for label in labels), f"Columns {labels} not in dataframe. Columns are {self.df.columns.tolist()}."
             _series: list[np.ndarray] = []
             for label in labels:
                 _series.append(np.array(self.df[label].values))

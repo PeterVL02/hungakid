@@ -43,9 +43,6 @@ class TestML(unittest.TestCase):
 
         assert result_ci_low is not None and converted_ci_low is not None
         assert result_ci_high is not None and converted_ci_high is not None
-        
-        print(result_ci_low, result_ci_high)
-        print(converted_ci_low, converted_ci_high)
 
         # Compare with tolerance
         self.assertLess(abs(result_ci_low - converted_ci_low), 0.001)
@@ -75,9 +72,6 @@ class TestML(unittest.TestCase):
         
         assert result_ci_low is not None and converted_ci_low is not None
         assert result_ci_high is not None and converted_ci_high is not None
-        
-        print(result_ci_low, result_ci_high)
-        print(converted_ci_low, converted_ci_high)
         
         # Compare with tolerance
         self.assertLess(abs(result_ci_low - converted_ci_low), 0.001)

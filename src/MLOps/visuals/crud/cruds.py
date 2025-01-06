@@ -85,9 +85,9 @@ class Plotter:
     def plot_interact(self, cmd: str, series: np.ndarray | list[np.ndarray] | None = None, label: str | list[str] | None = None, show: bool = False) -> None:
         if label is not None and series is not None:
             if isinstance(label, list):
-                assert len(series) == len(label)
+                assert len(series) == len(label), "Length of series and labels must be same."
                 
-        if cmd != 'show':
+        if not cmd in {'show', 'close'}:
             assert bool(label), f"Label must be provided for cmd {cmd}."
 
         if show:
