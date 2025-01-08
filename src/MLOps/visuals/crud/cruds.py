@@ -57,11 +57,11 @@ class Plotter:
         self.plot_funcs.append(self.plot_scatter)
         self.plot_cnt += 1
         
-    def show(self) -> None:
+    def show(self, *args, **kwargs) -> None:
         """Show the plots in as close to a square layout as possible."""
         if not self.plot_cnt:
-            plt.show()
-            return
+            plt.ioff()
+            raise ValueError("No plots to show.")
         
         rows = int(math.ceil(math.sqrt(self.plot_cnt)))
         cols = int(math.ceil(self.plot_cnt / rows))
@@ -95,17 +95,22 @@ class Plotter:
                 "hist": self.plot_hist,
                 "box": self.plot_boxpl,
                 "scatter": self.plot_scatter,
-                'close': self.close
+                'close': self.close,
+                'show': self.show
             }
         else:
             PLOTCOMMANDS: dict[str, PlotCommandFn] = {
                 "hist":    self._plot_hist_wraps,
                 "box":     self._plot_boxpl_wraps,
                 "scatter": self._plot_scatter_wraps,
-                'close':   self.close
+                'close':   self.close,
+                'show':    self.show
             }
         plt.ion()
-        PLOTCOMMANDS[cmd](series, label)
+        try:
+            PLOTCOMMANDS[cmd](series, label)
+        except KeyError:
+            raise ValueError(f"Invalid command {cmd}.")
     
 if __name__ == "__main__":
     pltr = Plotter()
