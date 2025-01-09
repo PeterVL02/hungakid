@@ -1,14 +1,10 @@
 from src.commands.project_store_protocol import Model
 from src.shell_project import ShellProject, ProjectType
-from src.commands.command_utils import MlModel
-from src.MLOps.utils.base import BaseEstimator
 from src.cliresult import chain, add_warning, CLIResult
 
 from dataclasses import dataclass, field
-import numpy as np
 import os
 import json
-from typing import Any, Callable
 
 @dataclass
 class ProjectStore(Model):
@@ -113,9 +109,12 @@ class ProjectStore(Model):
             type_ = ProjectType(metadata['type'])
             is_cleaned = metadata['cleaned']
             description = metadata['description']
+            feature_names = metadata['feature_names']
+            
             self.create(alias, type_)
             self.projects[alias].project_description = description
             self.projects[alias].is_cleaned = is_cleaned
+            self.projects[alias].feature_names = feature_names
         else:
             raise ValueError(f"Project {alias} not found.")
         if not self.current_project:

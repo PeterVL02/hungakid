@@ -5,9 +5,14 @@ from src.cliresult import chain, add_warning
 import numpy as np
 from sklearn.model_selection import GridSearchCV
 from tqdm import tqdm
-from sklearn.utils._testing import ignore_warnings
 import re
 import os
+import sys
+import warnings
+
+if not sys.warnoptions:
+    warnings.simplefilter("ignore")
+    os.environ["PYTHONWARNINGS"] = "ignore"
 
 
 
@@ -88,7 +93,6 @@ def infer_param_grid(model: BaseEstimator, n_values: int = 3) -> dict[str, list[
 def make_model_grids(*models: BaseEstimator) -> dict[str, dict[str, list[int | float]]]:
     return {model.__class__.__name__: infer_param_grid(model) for model in models}
 
-@ignore_warnings() # type: ignore
 def tune_hyperparameters(model: BaseEstimator, X: np.ndarray, y: np.ndarray, param_grid: dict[str, list[float | int]], cv: int = 10) -> dict[str, float | int | str]:
     """
     Tune hyperparameters for a given model using GridSearchCV.
@@ -125,7 +129,6 @@ def tune_models(*models: BaseEstimator, X: np.ndarray, y: np.ndarray, cv: int = 
     return list(zip(models, params))
 
 @chain
-@ignore_warnings()
 def log_predictions_from_best(*models: BaseEstimator, project: "ShellProject",  cv: int = 10, n_values: int = 3) -> None: # type: ignore to avoid circular import #TODO fix it
     """
     Get predictions from the best hyperparameters for a list of models using GridSearchCV.

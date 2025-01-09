@@ -5,10 +5,12 @@ from src.MLOps.utils.base import BaseEstimator
 from src.MLOps.tuning import log_predictions_from_best
 from src.MLOps.visuals.crud.cruds import Plotter
 from src.cliresult import chain, add_warning, add_note, CLIResult
+from src.MLOps.visuals.pca.pca import pca_fit
 
-from pandas import DataFrame, read_csv, read_json, read_parquet, read_excel, read_xml, read_html
+from pandas import DataFrame, read_csv, read_json, read_excel, read_xml, read_html
 from dataclasses import dataclass, field
 import numpy as np
+from sklearn.decomposition import PCA
 import os
 import json
 
@@ -22,7 +24,9 @@ class ShellProject:
     df: DataFrame | None = None
     X: np.ndarray | None = None
     y: np.ndarray | None = None
-    plotter = Plotter()
+    feature_names: list[str] | None = None
+    plotter: Plotter = Plotter()
+    pca : PCA | None = None
     
     modeldata: dict[str, dict[str, float | int | str]] = field(default_factory=dict)
     
@@ -79,12 +83,15 @@ class ShellProject:
             else:
                 self.df.rename(columns={col: col.lower().strip()}, inplace=True)
         self.is_cleaned = False
+        self.plotter = Plotter()
+        self.pca = None
+        self.X, self.y = None, None
         return CLIResult(f"Dataframe {file.split('/')[-1]} added successfully.")
 
     @chain
     def read_data(self, head: int = 5) -> CLIResult:
         if not self.is_cleaned:
-            add_warning(self, "Warning: Data not cleaned. Run clean_data to clean data and rerun read_data to be safe...")
+            add_warning(self, "Warning: Data not cleaned. Run clean to clean data and rerun view to be safe...")
         if self.df is not None:
             return CLIResult(self.df.head(head).to_string())
         raise ValueError("Project has no dataframe")
@@ -92,7 +99,7 @@ class ShellProject:
     @chain
     def list_cols(self) -> CLIResult:
         if not self.is_cleaned:
-            add_warning(self, "Warning: Data not cleaned. Run clean_data to clean data and rerun list_cols to be safe...")
+            add_warning(self, "Warning: Data not cleaned. Run clean to clean data and rerun listcols to be safe...")
         if self.df is None:
             raise ValueError("Project has no dataframe.")
         return CLIResult(str(self.df.columns.tolist()))
@@ -100,9 +107,9 @@ class ShellProject:
     @chain 
     def make_X_y(self, target: str) -> CLIResult:
         if not self.is_cleaned:
-            add_warning(self, "Warning: Data not cleaned. Run clean_data to clean data and rerun make_X_y to be safe...")
+            add_warning(self, "Warning: Data not cleaned. Run clean to clean data and rerun makexy to be safe...")
         if self.df is None:
-            raise ValueError("Project has no dataframe. Use add_data to add a dataframe.")
+            raise ValueError("Project has no dataframe. Use read to add a dataframe.")
         if target not in self.df.columns:
             raise ValueError(f"Target column {target} not in dataframe.")
         for col in self.df.columns:
@@ -127,6 +134,7 @@ class ShellProject:
         self.y = np.array(self.df[target].values)
 
         self.X = self.df.drop(target, axis=1).values.astype(float)
+        self.feature_names = self.df.drop(target, axis=1).columns.tolist()
         
         return CLIResult("X and y created successfully.")
 
@@ -142,7 +150,7 @@ class ShellProject:
     @chain
     def log_model(self, model_name: MlModel | str, predictions: np.ndarray, params: dict[str, float | int | str], **kwargs: dict[str, float | int | str]) -> CLIResult:
         if self.X is None or self.y is None:
-            raise ValueError("X and y not set. Run make_X_y first.")
+            raise ValueError("X and y not set. Run makexy first.")
         if self.project_type == ProjectType.CLASSIFICATION:
             score, CI_lower, CI_upper = accuracy_confidence_interval(self.y, predictions)
 
@@ -186,7 +194,7 @@ class ShellProject:
     @chain
     def log_predictions_from_best(self, *models: BaseEstimator, cv: int = 10, n_values: int = 3) -> CLIResult:
         if self.X is None or self.y is None:
-            raise ValueError("X and y not set. Run make_X_y first.")
+            raise ValueError("X and y not set. Run makexy first.")
         if not models:
             raise ValueError("No models provided.")
         return log_predictions_from_best(*models, project=self, cv=cv, n_values=n_values)
@@ -203,7 +211,7 @@ class ShellProject:
         if not os.path.exists(project_path):
             os.makedirs(project_path)
         elif not overwrite:
-            raise ValueError(f"Project {self.project_name} already exists. Use -overwrite=True to overwrite.")
+            raise ValueError(f"Project {self.project_name} already exists. Use -overwrite to overwrite.")
         else:
             add_warning(self, f"Warning: Overwriting project {self.project_name}.")
         
@@ -221,7 +229,8 @@ class ShellProject:
         metadata = {
             'description': self.project_description,
             'type': self.project_type,
-            'cleaned': self.is_cleaned
+            'cleaned': self.is_cleaned,
+            'feature_names': self.feature_names
         }
         with open(type_path, 'w') as f:
             json.dump(metadata, f, indent=4)
@@ -270,6 +279,19 @@ class ShellProject:
             raise ValueError('Labels must be of type str or list of strings.')
         return CLIResult('Success.')
     
+    @chain
+    def plot_pca(self, show: bool = False) -> CLIResult:
+        if self.X is None or self.y is None or self.feature_names is None:
+            if self.df is None:
+                raise ValueError("Project has no dataframe. Use read to add a dataframe.")
+            raise ValueError("X and y not set. Run makexy first.")
+        if self.pca is None:
+            self.run_pca()
+        assert self.pca is not None, "PCA not run successfully."
+        self.plotter.pca_plot(self.pca, self.X, self.y, task=self.project_type.value, cols = self.feature_names, show=show)
+        return CLIResult('PCA plot created successfully.')
+        
+    
     def show(self) -> CLIResult:
         self.plotter.show()
         return CLIResult('Plots shown successfully.')
@@ -278,6 +300,16 @@ class ShellProject:
         if self.df is None:
             raise ValueError("Project has no dataframe.")
         return CLIResult(self.df.describe().to_string())
+    
+    def run_pca(self) -> CLIResult:
+        if self.X is None or self.y is None:
+            if self.df is None:
+                raise ValueError("Project has no dataframe. Use read to add a dataframe.")
+            raise ValueError("X and y not set. Run makexy first.")
+        self.pca = pca_fit(self.X)
+        add_note(self, f"Note: PCA explained variance: {self.pca.explained_variance_ratio_}")
+        return CLIResult("Ran PCA successfully.")
+        
         
     def __str__(self) -> str:
         return f"Project: {self.project_name}, Type: {self.project_type}"

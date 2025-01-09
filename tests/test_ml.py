@@ -9,7 +9,7 @@ expected = {
     'add_data' : 'Dataframe iris.csv added successfully.',
     'bad_data' : 'Error: Dataframe nonexistingdata not found.',
     'x_y' : 'X and y created successfully.',
-    'not cleaned' : 'Warning: Data not cleaned. Run clean_data to clean data and rerun make_X_y to be safe...',
+    'not cleaned' : 'Warning: Data not cleaned. Run clean to clean data and rerun makexy to be safe...',
 }
 
 results = {
@@ -23,9 +23,9 @@ class TestML(unittest.TestCase):
     def test_linear(self):
         commands = [
             "create temporaryproj r",
-            "add_data iris",
-            "make_x_y sepallengthcm",
-            "linreg",
+            "read iris",
+            "makexy sepallengthcm",
+            "linearregression",
             "exit",
         ]
         result = simulate_cli(commands)
@@ -47,13 +47,14 @@ class TestML(unittest.TestCase):
         # Compare with tolerance
         self.assertLess(abs(result_ci_low - converted_ci_low), 0.001)
         self.assertLess(abs(result_ci_high - converted_ci_high), 0.001)
+        self.assert_(not 'Error' in result)
         
     def test_logistic(self):
         commands = [
             "create temporaryproj c",
-            "add_data iris",
-            "make_x_y species",
-            "logisticreg",
+            "read iris",
+            "makexy species",
+            "logisticregression",
             "exit",
         ]
         result = simulate_cli(commands)
@@ -76,32 +77,33 @@ class TestML(unittest.TestCase):
         # Compare with tolerance
         self.assertLess(abs(result_ci_low - converted_ci_low), 0.001)
         self.assertLess(abs(result_ci_high - converted_ci_high), 0.001)
+        self.assert_(not 'Error' in result)
 
     def test_full_run(self):
         commands = [
             "create reg_project regression",
-            "add_data Iris",
-            "read_data",
-            "make_X_y SepalLengthCm",
-            "linreg",
-            "mlpreg --max_iter 1000",
+            "read Iris",
+            "view",
+            "makexy SepalLengthCm",
+            "linearregression",
+            "mlpregressor --max_iter 1000",
             "",
             "",
             "create clas_project classification",
-            "add_data Iris",
-            "clean_data",
-            "make_X_y Species",
-            "read_data",
-            "naivebayes",
-            "mlpclas -max_iter 1000",
-            "logisticreg",
+            "read Iris",
+            "clean",
+            "makexy Species",
+            "view",
+            "gaussiannb",
+            "mlpclassifier -max_iter 1000",
+            "logisticregression",
             "summary",
             "chproj reg_project",
             "summary",
             "pcp",
             "listproj",
             "chproj clas_project",
-            "log_best -n_values 1",
+            "runall -n_values 1",
             "summary",
             "save",
             "plot hist sepallengthcm",
@@ -116,7 +118,9 @@ class TestML(unittest.TestCase):
             "exit",
          ]
         result = simulate_cli(commands)
+        self.assert_(not 'Error' in result)
 
     def test_full_run_2(self):
-        commands = ["create test c; add_data iris; make_x_y species; log_best -n_values 1; exit"]
+        commands = ["create test c; read iris; makexy species; runall -n_values 1; summary; exit"]
         result = simulate_cli(commands)
+        self.assert_(not 'Error' in result)

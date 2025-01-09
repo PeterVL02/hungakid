@@ -10,3 +10,4 @@ projects/
 tests/__pycache__
 src/MLOps/visuals/__pycache__
 src/MLOps/visuals/crud/__pycache__
+src/MLOps/visuals/pca/__pycache__

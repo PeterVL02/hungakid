@@ -34,7 +34,10 @@ def config(model: Model, cmd: str, dir: str | None = None, newpath: str | None =
         'set' : _set,
         'get' : _get
     }
-    return commands[cmd](dir, newpath)
+    try:
+        return commands[cmd](dir, newpath)
+    except KeyError:
+        raise KeyError(f"Invalid command {cmd}.")
 
 def _show(dir: str | None, newpath: str | None) -> str:
     with open('config/paths.json', 'r') as f:

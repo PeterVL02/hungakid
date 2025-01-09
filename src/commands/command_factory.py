@@ -4,12 +4,13 @@ from src.commands.proj_cmds import (create, set_current_project,
                                     add_data, read_data, make_X_y, 
                                     clean_data, summary,
                                     save, load_project_from_file,
-                                    plot, show, stats, list_cols
+                                    stats, list_cols
                                     )
 from src.commands.ml_cmds import (linreg, mlpreg, naivebayes, mlpclas, 
                                   logisticreg, decisiontree, randomforest, 
                                   gradientboosting, log_from_best)
 from src.commands.config_cmds import config
+from src.commands.plot_cmds import plot, show, pca_
 
 from typing import Any, Callable
 from pandas import DataFrame
@@ -27,33 +28,34 @@ def list_cmds(*args, **kwargs) -> str:
     return "\n".join(f"{name}: {desc}" for name, desc in cmds.items())
 
 COMMANDS: dict[str, CommandFn] = {
-    "linreg": linreg,
-    "mlpreg": mlpreg,
-    "naivebayes": naivebayes,
-    "mlpclas": mlpclas,
-    "logisticreg": logisticreg,
-    "decisiontree": decisiontree,
-    "randomforest": randomforest,
-    "gradientboosting": gradientboosting,
+    "linearregression": linreg, 
+    "mlpregressor": mlpreg, 
+    "gaussiannb": naivebayes, 
+    "mlpclassifier": mlpclas, 
+    "logisticregression": logisticreg, 
+    "decisiontreeclassifier": decisiontree, 
+    "randomforestclassifier": randomforest, 
+    "gradientboostingclassifier": gradientboosting, 
     "create": create,
     "chproj": set_current_project,
     "listproj": list_projects,
     "delete": delete,
     "pcp" : pcp,
     "help" : list_cmds,
-    "add_data": add_data,
-    "list_cols": list_cols,
-    "read_data": read_data,
-    "make_x_y": make_X_y,
-    "clean_data": clean_data,
+    "read": add_data, 
+    "listcols": list_cols, 
+    "view": read_data, 
+    "makexy": make_X_y, #TODO: update references + readme
+    "clean": clean_data, 
     "summary": summary,
-    "log_best" : log_from_best,
+    "runall" : log_from_best, # TODO: update references + readme
     "save": save,
     "load": load_project_from_file,
     "plot" : plot,
     "show" : show,
     "stats" : stats,
-    "config" : config
+    "config" : config,
+    "pca" : pca_
 }
 
 

@@ -17,7 +17,7 @@ class Shell:
         Returns:
             bool: True if command is not "exit", False otherwise.
         """
-        if cmd == "exit":
+        if cmd.strip() == "exit":
             return False, None
         try:
             command = Command.from_string(cmd)

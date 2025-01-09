@@ -49,7 +49,7 @@ class TestCommands(unittest.TestCase):
     def test_add_data(self):
         commands = [
             "create temporaryproj regression",
-            "add_data Iris",
+            "read Iris",
             "exit",
         ]
         result = simulate_cli(commands)
@@ -59,7 +59,7 @@ class TestCommands(unittest.TestCase):
     def test_add_wrong_data(self):
         commands = [
             "create temporaryproj regression",
-            "add_data nonexistingdata",
+            "read nonexistingdata",
             "exit",
         ]
         result = simulate_cli(commands)
@@ -73,9 +73,9 @@ class TestCommands(unittest.TestCase):
         original_saved_projects = os.listdir(projects_dir)
         commands = [
             "create temporaryproj r",
-            "add_data iris",
-            "clean_data",
-            "make_x_y sepallengthcm",
+            "read iris",
+            "clean",
+            "makexy sepallengthcm",
             "save",
             "exit",
         ]
@@ -104,4 +104,7 @@ class TestCommands(unittest.TestCase):
         self.assertEqual(result1, converted1)
         self.assertEqual(result2, converted2)
         self.assertEqual(result3, converted3)
+        self.assert_(not 'Error' in result1)
+        self.assert_(not 'Error' in result2)
+        self.assert_(not 'Error' in result3)
         

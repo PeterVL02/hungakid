@@ -14,6 +14,7 @@ This project provides a command-line interface (CLI) for managing machine learni
    - Generate feature (`X`) and target (`y`) matrices.
    - Create basic plots.
    - View summary statistics of the data.
+   - Perform Principal Component Analysis (PCA).
 
 - **Machine Learning Operations:**
    - Train regression and classification models such as Linear Regression, MLPs, Random Forests, and Gradient Boosting Classifiers.
@@ -68,18 +69,18 @@ python main.py
     ```
 2. **Load a dataset:**
     ```
-    >> add_data my_dataset
+    >> read my_dataset
     ```
     *(Ensure the file `data/my_dataset.csv` exists.)*
 
 3. **Preview data:**
     ```
-    >> read_data -head 10
+    >> view -head 10
     ```
 
 4. **Preprocess data:**
     ```
-    >> clean_data; make_x_y target_column
+    >> clean; makexy target_column
     ```
     *(Replace `target_column` with the name of the target column.)*
 
@@ -92,9 +93,17 @@ python main.py
     ```
     *(Replace `data_column` and `target_column` with the names of the columns to plot.)*
 
+6. **Perform PCA**
+    ```
+    >> pca run
+    >> pca plot
+    >> show
+    >> plot close
+    ```
+
 6. **Train a linear regression model:**
     ```
-    >> linreg
+    >> linearregression
     ```
 
 7. **View project summary:**
@@ -103,7 +112,7 @@ python main.py
     ```
 8. **Tune hyperparameters of multiple models and log their performance and parameters:**
     ```
-    >> log_best -n_values 3; summary
+    >> runall -n_values 3; summary
     ```
 
 9. **Save and exit the shell:**
@@ -163,17 +172,17 @@ Below is a list of commands. The commands have obligatory and optional parameter
 
 ### Command (Basic)
 ```bash
->> add_data
+>> read
 ```
 
 ```javascript
 /**
  * Loads a dataset from a CSV file.
  *
- * @param {string} datasetName - The name of the dataset to be loaded. At this time only accepts CSV files. Leave out ".csv".
+ * @param {string} datasetName - The name of the dataset to be loaded. Accepts multiple extensions. Leave out ".{extension}".
  *
  * @description
- * Use this function to load a dataset from a CSV file into the current project.
+ * Use this function to load a dataset from a file into the current project.
  * The dataset will be stored as the only dataset in the project.
  * The dataset name is a required identifier for referencing the loaded dataset.
  */
@@ -181,7 +190,7 @@ Below is a list of commands. The commands have obligatory and optional parameter
 
 ### Command (Data)
 ```bash
->> read_data
+>> view
 ```
 
 ```javascript
@@ -198,7 +207,7 @@ Below is a list of commands. The commands have obligatory and optional parameter
 
 ### Command (Data)
 ```bash
->> list_cols
+>> listcols
 ```
 
 ```javascript
@@ -212,7 +221,7 @@ Below is a list of commands. The commands have obligatory and optional parameter
 
 ### Command (Data)
 ```bash
->> clean_data
+>> clean
 ```
 
 ```javascript
@@ -227,7 +236,7 @@ Below is a list of commands. The commands have obligatory and optional parameter
 
 ### Command (Data)
 ```bash
->> make_x_y
+>> makexy
 ```
 
 ```javascript
@@ -272,6 +281,24 @@ Below is a list of commands. The commands have obligatory and optional parameter
  * Use this function to generate plots of the data. The plot type determines the kind of plot to generate.
  * The column name is a required identifier for specifying the column to plot. When using scatterplots, the columns must be specified as [column1, column2].
  * Using "close" closes any active plots. You can also add "-show" or "-show True" to immediately display the plot.
+ */
+```
+
+### Command (Data)
+```bash
+>> pca
+```
+
+```javascript
+/**
+ * Performs Principal Component Analysis (PCA) on the dataset.
+ *
+ * @param {str} cmd - The command to execute (accepts "run" or "plot").
+ * @param {boolean} [show=False] - If true, displays the related plots immediatly.
+ *
+ * @description
+ * Use this function to perform Principal Component Analysis (PCA) on the dataset.
+ * The command is a required identifier for specifying the action to perform. Running "plot" will automatically run "run" if it has not been run before.
  */
 ```
 
@@ -386,7 +413,7 @@ Below is a list of commands. The commands have obligatory and optional parameter
 
 ### Command (ML)
 ```bash
->> linreg
+>> linearregression
 ```
 
 ```javascript
@@ -404,7 +431,7 @@ Below is a list of commands. The commands have obligatory and optional parameter
 
 ### Command (ML)
 ```bash
->> mlpreg
+>> mlpregressor
 ```
 
 ```javascript
@@ -421,11 +448,12 @@ Below is a list of commands. The commands have obligatory and optional parameter
 ```
 
 ### Continuation
-Commands seen above are just a two of the available commands. The pattern repeats. To see the full list of commands, run the `help` command in the CLI. For additional information, please refer to the specific command documentation through the `help` command, and visit scikit-learn's documentation.
+Commands seen above are just a two of the available commands. The pattern repeats. To see the full list of commands, run the `help` command in the CLI. The names of the different commands correspond to the names of the models in scikit-learn.
+For additional information, please refer to the specific command documentation through the `help` command, and visit scikit-learn's documentation.
 
 ## Command (ML)
 ```bash
->> log_best
+>> runall
 ```
 
 ```javascript
@@ -487,3 +515,6 @@ Commands seen above are just a two of the available commands. The pattern repeat
  * Use this function to configure the CLI path settings. You can set the paths for the data and projects directories. When using "show", no additional parameters are required. When using "get", specify the directory to get the current path. When using "set", specify the directory and the new path to set.
  */
 ```
+
+# Acknowledgements
+The shell interface was inspired heavily by https://github.com/ArjanCodes/examples/blob/main/2024/dataroast/after/src/shell.py.

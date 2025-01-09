@@ -1,7 +1,10 @@
+from src.MLOps.visuals.pca.pca import plot_explained_var, plot_pca, barplot_pcs
+
 import numpy as np
 import matplotlib.pyplot as plt
 import math
 from typing import Callable, Any
+from sklearn.decomposition import PCA
 
 PlotCommandFn = Callable[..., Any]
 
@@ -10,7 +13,7 @@ class Plotter:
     def __init__(self):
         self.plot_cnt: int = 0
         self.plot_funcs: list[Callable] = []
-        self.plot_data: list[dict[str, np.ndarray | str | int | list[str] | list[np.ndarray]]] = []
+        self.plot_data: list[dict[str, Any]] = []
         
     def plot_hist(self, series: np.ndarray, label: str, show: bool = True) -> None:
         """Plots a histogram of the given series."""
@@ -59,6 +62,7 @@ class Plotter:
         
     def show(self, *args, **kwargs) -> None:
         """Show the plots in as close to a square layout as possible."""
+        plt.ion()
         if not self.plot_cnt:
             plt.ioff()
             raise ValueError("No plots to show.")
@@ -81,6 +85,21 @@ class Plotter:
         """Close the plot."""
         plt.close()
         plt.ioff()
+    
+    def pca_plot(self, pca: PCA, X: np.ndarray, y: np.ndarray, task: str,
+                 cols: list[str], show: bool = False) -> None:
+        """Plots the PCA visualization of the input data."""
+        self.plot_data.append({'pca': pca, 'X': X, 'y': y, 'task': task})
+        self.plot_funcs.append(plot_pca)
+        self.plot_data.append({'pca' : pca})
+        self.plot_funcs.append(plot_explained_var)
+        self.plot_data.append({'pca' : pca, 'cols': cols})
+        self.plot_funcs.append(barplot_pcs)
+        
+        self.plot_cnt += 3
+        if show:
+            self.show()
+        
         
     def plot_interact(self, cmd: str, series: np.ndarray | list[np.ndarray] | None = None, label: str | list[str] | None = None, show: bool = False) -> None:
         if label is not None and series is not None:
