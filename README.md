@@ -28,13 +28,7 @@ This project provides a command-line interface (CLI) for managing machine learni
 ## Installation
 
 ### Prerequisites
-- Python 3.8+
-- Required libraries:
-   - `numpy`
-   - `pandas`
-   - `scikit-learn`
-   - `colorama`
-   - `tqdm`
+- Python $\geq$ 3.11
 
 Install dependencies using pip:
 ```bash
@@ -53,7 +47,7 @@ pip install -r requirements.txt
     ```
 
 ## Usage
-Place your CSV files in the `data` directory by default or configure a custom data directory with the `config` command.
+Place your data files in the `.data/` directory by default or configure a custom data directory with the `config` command.
 
 
 ### Starting the Shell
